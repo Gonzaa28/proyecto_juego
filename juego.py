@@ -289,6 +289,42 @@ def funcion():
             if jugador.animacion > 3:
                 jugador.animacion = 0
 
+        if w_bandera and d_bandera and space_bandera:
+            jugador.estado = PUNCH_UP
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+            else:
+                jugador.animacion += 1
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+
+        if d_bandera and s_bandera and space_bandera:
+            jugador.estado = PUNCH_DOWN
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+            else:
+                jugador.animacion += 1
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+
+        if s_bandera and a_bandera and space_bandera:
+            jugador.estado = PUNCH_DOWN
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+            else:
+                jugador.animacion += 1
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+
+        if a_bandera and w_bandera and space_bandera:
+            jugador.estado = PUNCH_UP
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+            else:
+                jugador.animacion += 1
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+
         jugador.dibujar(pantalla)
 
         pygame.display.update()
