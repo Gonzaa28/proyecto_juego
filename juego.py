@@ -19,7 +19,6 @@ PUNCH_RIGHT = 5
 PUNCH_DOWN = 6
 PUNCH_LEFT = 7
 
-
 # pygame.time.get_ticks()
 
 
@@ -56,6 +55,15 @@ class ObjetoJuego:
         if self.posicion.left < 0:
             self.posicion.left = 0
 
+    def recorrer_imagenes(self):
+        cant_animaciones = len(self.imagenes[self.estado]) - 1
+        if self.animacion > cant_animaciones:
+            self.animacion = 0
+        else:
+            self.animacion += 1
+        if self.animacion > cant_animaciones:
+            self.animacion = 0
+
 
 class Jugador(ObjetoJuego):
     def __init__(self, dimensiones=(60, 60)):
@@ -74,7 +82,7 @@ class Jugador(ObjetoJuego):
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down4.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/down5.png"), dimensiones)
+             # pygame.transform.scale(pygame.image.load("imagenes/jugador/down5.png"), dimensiones)
              ],
             [pygame.transform.scale(pygame.image.load("imagenes/jugador/left1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/left2.png"), dimensiones),
@@ -104,6 +112,23 @@ class Jugador(ObjetoJuego):
         ]
         super(Jugador, self).__init__(imagenes=imagenes, pos_x=int(ANCHO / 2), pos_y=int(ALTO / 2), estado=0,
                                       animacion=0, velocidad=5)
+        self.ultimo_estado = 0
+
+    def obtener_ultimo_estado(self):
+        if self.estado is not PUNCH_UP and self.estado is not PUNCH_RIGHT and self.estado is not PUNCH_DOWN \
+                and self.estado is not PUNCH_LEFT:
+            self.ultimo_estado = self.estado
+        return self.ultimo_estado
+
+    def golpear(self):
+        if self.obtener_ultimo_estado() == UP:
+            self.estado = PUNCH_UP
+        if self.obtener_ultimo_estado() == RIGHT:
+            self.estado = PUNCH_RIGHT
+        if self.obtener_ultimo_estado() == DOWN:
+            self.estado = PUNCH_DOWN
+        if self.obtener_ultimo_estado() == LEFT:
+            self.estado = PUNCH_LEFT
 
 
 reloj = pygame.time.Clock()
@@ -127,10 +152,8 @@ def funcion():
     space_bandera = False
 
     corriendo = True
-    contador = 0
-    while corriendo:
 
-        contador += 5
+    while corriendo:
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -163,167 +186,85 @@ def funcion():
 
         if not w_bandera and not d_bandera and not s_bandera and not a_bandera and not space_bandera:
             jugador.animacion = 0
-            if jugador.estado == PUNCH_RIGHT or jugador.estado:
-                jugador.estado = ultimo_estado
-
-            if jugador.estado == DOWN and (contador % 90) == 0:
-                jugador.animacion = 4
+            if jugador.estado == PUNCH_UP or jugador.estado == PUNCH_RIGHT or jugador.estado == PUNCH_DOWN or\
+                    jugador.estado == PUNCH_LEFT:
+                jugador.estado = jugador.obtener_ultimo_estado()
 
         if w_bandera:
             jugador.mover_arriba()
             jugador.estado = UP
-            jugador.animacion += 1
-            if jugador.animacion == 4:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if d_bandera:
             jugador.mover_derecha()
             jugador.estado = RIGHT
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if s_bandera:
             jugador.mover_abajo()
             jugador.estado = DOWN
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if a_bandera:
             jugador.mover_izquierda()
             jugador.estado = LEFT
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-
-        if jugador.estado is not PUNCH_RIGHT and jugador.estado is not PUNCH_DOWN and jugador.estado is not PUNCH_LEFT:
-            ultimo_estado = jugador.estado
+            jugador.recorrer_imagenes()
 
         if space_bandera:
-            if ultimo_estado == UP:
-                jugador.estado = PUNCH_UP
-            if ultimo_estado == RIGHT:
-                jugador.estado = PUNCH_RIGHT
-            if ultimo_estado == DOWN:
-                jugador.estado = PUNCH_DOWN
-            if ultimo_estado == LEFT:
-                jugador.estado = PUNCH_LEFT
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.golpear()
+            jugador.recorrer_imagenes()
 
         if w_bandera and d_bandera:
             jugador.estado = UP
-            jugador.animacion += 1
-            if jugador.animacion == 4:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if d_bandera and s_bandera:
             jugador.estado = DOWN
-            jugador.animacion += 1
-            if jugador.animacion == 4:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if s_bandera and a_bandera:
             jugador.estado = DOWN
-            jugador.animacion += 1
-            if jugador.animacion == 4:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if a_bandera and w_bandera:
             jugador.estado = UP
-            jugador.animacion += 1
-            if jugador.animacion == 4:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if w_bandera and space_bandera:
             jugador.estado = PUNCH_UP
             jugador.mover_abajo()
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if d_bandera and space_bandera:
             jugador.estado = PUNCH_RIGHT
             jugador.mover_izquierda()
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if s_bandera and space_bandera:
             jugador.estado = PUNCH_DOWN
             jugador.mover_arriba()
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if a_bandera and space_bandera:
             jugador.estado = PUNCH_LEFT
             jugador.mover_derecha()
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if w_bandera and d_bandera and space_bandera:
             jugador.estado = PUNCH_UP
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if d_bandera and s_bandera and space_bandera:
             jugador.estado = PUNCH_DOWN
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if s_bandera and a_bandera and space_bandera:
             jugador.estado = PUNCH_DOWN
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         if a_bandera and w_bandera and space_bandera:
             jugador.estado = PUNCH_UP
-            if jugador.animacion > 3:
-                jugador.animacion = 0
-            else:
-                jugador.animacion += 1
-            if jugador.animacion > 3:
-                jugador.animacion = 0
+            jugador.recorrer_imagenes()
 
         jugador.dibujar(pantalla)
 
