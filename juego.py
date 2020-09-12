@@ -15,7 +15,9 @@ RIGHT = 1
 DOWN = 2
 LEFT = 3
 PUNCH_RIGHT = 4
-PUNCH_LEFT = 5
+PUNCH_DOWN = 5
+PUNCH_LEFT = 6
+
 
 # pygame.time.get_ticks()
 
@@ -82,6 +84,11 @@ class Jugador(ObjetoJuego):
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright4.png"), dimensiones)
+             ],
+            [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown1.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown2.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown3.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown4.png"), dimensiones)
              ],
             [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft2.png"), dimensiones),
@@ -193,7 +200,7 @@ def funcion():
             if jugador.animacion > 3:
                 jugador.animacion = 0
 
-        if jugador.estado is not PUNCH_RIGHT and jugador.estado is not PUNCH_LEFT:
+        if jugador.estado is not PUNCH_RIGHT and jugador.estado is not PUNCH_DOWN and jugador.estado is not PUNCH_LEFT:
             ultimo_estado = jugador.estado
 
         if space_bandera:
@@ -201,6 +208,8 @@ def funcion():
                 jugador.estado = PUNCH_RIGHT
             if ultimo_estado == LEFT:
                 jugador.estado = PUNCH_LEFT
+            if ultimo_estado == DOWN:
+                jugador.estado = PUNCH_DOWN
             if jugador.animacion > 3:
                 jugador.animacion = 0
             else:
@@ -235,6 +244,16 @@ def funcion():
         if d_bandera and space_bandera:
             jugador.estado = PUNCH_RIGHT
             jugador.mover_izquierda()
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+            else:
+                jugador.animacion += 1
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+
+        if s_bandera and space_bandera:
+            jugador.estado = PUNCH_DOWN
+            jugador.mover_arriba()
             if jugador.animacion > 3:
                 jugador.animacion = 0
             else:
