@@ -14,9 +14,10 @@ UP = 0
 RIGHT = 1
 DOWN = 2
 LEFT = 3
-PUNCH_RIGHT = 4
-PUNCH_DOWN = 5
-PUNCH_LEFT = 6
+PUNCH_UP = 4
+PUNCH_RIGHT = 5
+PUNCH_DOWN = 6
+PUNCH_LEFT = 7
 
 
 # pygame.time.get_ticks()
@@ -79,6 +80,11 @@ class Jugador(ObjetoJuego):
              pygame.transform.scale(pygame.image.load("imagenes/jugador/left2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/left3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/left4.png"), dimensiones)
+             ],
+            [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup1.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup2.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup3.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup4.png"), dimensiones)
              ],
             [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright2.png"), dimensiones),
@@ -204,12 +210,14 @@ def funcion():
             ultimo_estado = jugador.estado
 
         if space_bandera:
+            if ultimo_estado == UP:
+                jugador.estado = PUNCH_UP
             if ultimo_estado == RIGHT:
                 jugador.estado = PUNCH_RIGHT
-            if ultimo_estado == LEFT:
-                jugador.estado = PUNCH_LEFT
             if ultimo_estado == DOWN:
                 jugador.estado = PUNCH_DOWN
+            if ultimo_estado == LEFT:
+                jugador.estado = PUNCH_LEFT
             if jugador.animacion > 3:
                 jugador.animacion = 0
             else:
@@ -239,6 +247,16 @@ def funcion():
             jugador.estado = UP
             jugador.animacion += 1
             if jugador.animacion == 4:
+                jugador.animacion = 0
+
+        if w_bandera and space_bandera:
+            jugador.estado = PUNCH_UP
+            jugador.mover_abajo()
+            if jugador.animacion > 3:
+                jugador.animacion = 0
+            else:
+                jugador.animacion += 1
+            if jugador.animacion > 3:
                 jugador.animacion = 0
 
         if d_bandera and space_bandera:
