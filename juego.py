@@ -131,6 +131,46 @@ class Jugador(ObjetoJuego):
             self.estado = PUNCH_LEFT
 
 
+class Enemigo(ObjetoJuego):
+    def __init__(self, dimensiones =(60, 60)):
+        imagenes = [
+            [pygame.transform.scale(pygame.image.load("imagenes/enemigo/up1.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/up2.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/up3.png"), dimensiones)
+             ],
+            [pygame.transform.scale(pygame.image.load("imagenes/enemigo/right1.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/right2.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/right3.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/right4.png"), dimensiones)
+             ],
+            [pygame.transform.scale(pygame.image.load("imagenes/enemigo/down1.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/down2.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/down3.png"), dimensiones)
+             ],
+            [pygame.transform.scale(pygame.image.load("imagenes/enemigo/left1.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/left2.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/left3.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/left4.png"), dimensiones),
+             ]
+        ]
+
+        super(Enemigo, self).__init__(imagenes=imagenes, pos_x=int(80), pos_y=int(ALTO / 2), estado=0, animacion=0,
+                                      velocidad=4)
+        self.destino = (0, 0)
+
+    def movimiento_trayectoria(self, pos_jugador):
+        if self.posicion == pos_jugador:
+            pass
+        if self.posicion[0] <= pos_jugador[0]:
+            self.mover_derecha()
+        if self.posicion[0] >= pos_jugador[0]:
+            self.mover_izquierda()
+        if self.posicion[1] >= pos_jugador[1]:
+            self.mover_arriba()
+        if self.posicion[1] <= pos_jugador[1]:
+            self.mover_abajo()
+
+
 reloj = pygame.time.Clock()
 
 pantalla = pygame.display.set_mode(RESOLUCION)
@@ -144,6 +184,7 @@ def funcion():
     pantalla.blit(fondo, (0, 0))
 
     jugador = Jugador()
+    enemigo = Enemigo()
 
     w_bandera = False
     d_bandera = False
@@ -183,6 +224,7 @@ def funcion():
                 space_bandera = False
 
         pantalla.blit(fondo, jugador.posicion, jugador.posicion)
+        pantalla.blit(fondo, enemigo.posicion, enemigo.posicion)
 
         if not w_bandera and not d_bandera and not s_bandera and not a_bandera and not space_bandera:
             jugador.animacion = 0
@@ -267,6 +309,8 @@ def funcion():
             jugador.recorrer_imagenes()
 
         jugador.dibujar(pantalla)
+        enemigo.movimiento_trayectoria(jugador.posicion)
+        enemigo.dibujar(pantalla)
 
         pygame.display.update()
 
