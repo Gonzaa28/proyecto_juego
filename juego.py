@@ -31,38 +31,66 @@ class ObjetoJuego:
         self.animacion = animacion
         self.posicion = self.imagenes[self.estado][self.animacion].get_rect().move(pos_x, pos_y)
         self.velocidad = velocidad
+        self.golpeando = False
+        self.caminando = False
 
     def dibujar(self, pantalla):
         pantalla.blit(self.imagenes[self.estado][self.animacion], self.posicion)
 
     def mover_arriba(self):
-        self.posicion = self.posicion.move(0, -self.velocidad)
-        if self.posicion.top < 0:
-            self.posicion.top = 0
+        if self.golpeando:
+            self.estado = PUNCH_UP
+        else:
+            self.estado = UP
+            self.posicion = self.posicion.move(0, -self.velocidad)
+            if self.posicion.top < 0:
+                self.posicion.top = 0
+        self.caminando = True
 
     def mover_derecha(self):
-        self.posicion = self.posicion.move(self.velocidad, 0)
-        if self.posicion.right > ANCHO:
-            self.posicion.right = ANCHO
+        if self.golpeando:
+            self.estado = PUNCH_RIGHT
+        else:
+            self.estado = RIGHT
+            self.posicion = self.posicion.move(self.velocidad, 0)
+            if self.posicion.right > ANCHO:
+                self.posicion.right = ANCHO
+        self.caminando = True
 
     def mover_abajo(self):
-        self.posicion = self.posicion.move(0, self.velocidad)
-        if self.posicion.bottom > ALTO:
-            self.posicion.bottom = ALTO
+        if self.golpeando:
+            self.estado = PUNCH_DOWN
+        else:
+            self.estado = DOWN
+            self.posicion = self.posicion.move(0, self.velocidad)
+            if self.posicion.bottom > ALTO:
+                self.posicion.bottom = ALTO
+        self.caminando = True
 
     def mover_izquierda(self):
-        self.posicion = self.posicion.move(-self.velocidad, 0)
-        if self.posicion.left < 0:
-            self.posicion.left = 0
+        if self.golpeando:
+            self.estado = PUNCH_LEFT
+        else:
+            self.estado = LEFT
+            self.posicion = self.posicion.move(-self.velocidad, 0)
+            if self.posicion.left < 0:
+                self.posicion.left = 0
+        self.caminando = True
 
     def recorrer_imagenes(self):
-        cant_animaciones = len(self.imagenes[self.estado]) - 1
-        if self.animacion > cant_animaciones:
-            self.animacion = 0
+        if self.caminando or self.golpeando:
+            cant_animaciones = len(self.imagenes[self.estado]) - 1
+            if self.animacion > cant_animaciones:
+                self.animacion = 0
+            else:
+                self.animacion += 1
+            if self.animacion > cant_animaciones:
+                self.animacion = 0
         else:
-            self.animacion += 1
-        if self.animacion > cant_animaciones:
             self.animacion = 0
+
+    def quedarse_quieto(self):
+        self.caminando = False
 
 
 class Jugador(ObjetoJuego):
@@ -114,29 +142,49 @@ class Jugador(ObjetoJuego):
                                       animacion=0, velocidad=5)
         self.ultimo_estado = 0
 
-    def obtener_ultimo_estado(self):
-        if self.estado is not PUNCH_UP and self.estado is not PUNCH_RIGHT and self.estado is not PUNCH_DOWN \
-                and self.estado is not PUNCH_LEFT:
-            self.ultimo_estado = self.estado
-        return self.ultimo_estado
+    def mover_arriba(self):
+        super(Jugador, self).mover_arriba()
+        self.ultimo_estado = UP
+
+    def mover_derecha(self):
+        super(Jugador, self).mover_derecha()
+        self.ultimo_estado = RIGHT
+
+    def mover_abajo(self):
+        super(Jugador, self).mover_abajo()
+        self.ultimo_estado = DOWN
+
+    def mover_izquierda(self):
+        super(Jugador, self).mover_izquierda()
+        self.ultimo_estado = LEFT
+
+    # def obtener_ultimo_estado(self):
+    #     if self.estado != PUNCH_UP and self.estado != PUNCH_RIGHT and self.estado != PUNCH_DOWN \
+    #             and self.estado != PUNCH_LEFT:
+    #         self.ultimo_estado = self.estado
+    #     return self.ultimo_estado
 
     def golpear(self):
-        if self.obtener_ultimo_estado() == UP:
+        self.golpeando = True
+        if self.ultimo_estado == UP:
             self.estado = PUNCH_UP
-        if self.obtener_ultimo_estado() == RIGHT:
+        if self.ultimo_estado == RIGHT:
             self.estado = PUNCH_RIGHT
-        if self.obtener_ultimo_estado() == DOWN:
+        if self.ultimo_estado == DOWN:
             self.estado = PUNCH_DOWN
-        if self.obtener_ultimo_estado() == LEFT:
+        if self.ultimo_estado == LEFT:
             self.estado = PUNCH_LEFT
 
-    def detectar_colision(self,enemigo):
+    def no_golpear(self):
+        self.golpeando = False
+        self.estado = self.ultimo_estado
 
-            if self.posicion.top <= enemigo.posicion.bottom and self.posicion.bottom >= enemigo.posicion.top \
-                    and self.posicion.right >= enemigo.posicion.left and self.posicion.left <= enemigo.posicion.right:
-                enemigo.golpeado = True
-            else:
-                enemigo.golpeado = False
+    def detectar_colision(self,enemigo):
+        if self.posicion.top <= enemigo.posicion.bottom and self.posicion.bottom >= enemigo.posicion.top \
+                and self.posicion.right >= enemigo.posicion.left and self.posicion.left <= enemigo.posicion.right:
+            enemigo.golpeado = True
+        else:
+            enemigo.golpeado = False
 
 
 class Enemigo(ObjetoJuego):
@@ -168,16 +216,32 @@ class Enemigo(ObjetoJuego):
         self.golpeado = False
 
     def movimiento_trayectoria(self, pos_jugador):
-        if self.posicion == pos_jugador:
-            pass
-        if self.posicion[0] <= pos_jugador[0]:
-            self.mover_derecha()
-        if self.posicion[0] >= pos_jugador[0]:
-            self.mover_izquierda()
-        if self.posicion[1] >= pos_jugador[1]:
-            self.mover_arriba()
-        if self.posicion[1] <= pos_jugador[1]:
-            self.mover_abajo()
+        diferencia_x = abs(self.posicion[0] - pos_jugador[0])
+        diferencia_y = abs(self.posicion[1] - pos_jugador[1])
+        if self.golpeado:
+            self.quedarse_quieto()
+        elif diferencia_x < diferencia_y:
+            if self.posicion == pos_jugador:
+                self.quedarse_quieto()
+            if self.posicion[0] < pos_jugador[0]:
+                self.mover_derecha()
+            if self.posicion[0] > pos_jugador[0]:
+                self.mover_izquierda()
+            if self.posicion[1] > pos_jugador[1]:
+                self.mover_arriba()
+            if self.posicion[1] < pos_jugador[1]:
+                self.mover_abajo()
+        else:
+            if self.posicion == pos_jugador:
+                self.quedarse_quieto()
+            if self.posicion[1] > pos_jugador[1]:
+                self.mover_arriba()
+            if self.posicion[1] < pos_jugador[1]:
+                self.mover_abajo()
+            if self.posicion[0] < pos_jugador[0]:
+                self.mover_derecha()
+            if self.posicion[0] > pos_jugador[0]:
+                self.mover_izquierda()
 
 
 reloj = pygame.time.Clock()
@@ -235,111 +299,37 @@ def funcion():
         pantalla.blit(fondo, jugador.posicion, jugador.posicion)
         pantalla.blit(fondo, enemigo.posicion, enemigo.posicion)
 
-        if not w_bandera and not d_bandera and not s_bandera and not a_bandera and not space_bandera:
-            jugador.animacion = 0
-            if jugador.estado == PUNCH_UP or jugador.estado == PUNCH_RIGHT or jugador.estado == PUNCH_DOWN or\
-                    jugador.estado == PUNCH_LEFT:
-                jugador.estado = jugador.obtener_ultimo_estado()
-
-        if w_bandera:
-            jugador.mover_arriba()
-            jugador.estado = UP
-            jugador.recorrer_imagenes()
-
-        if d_bandera:
-            jugador.mover_derecha()
-            jugador.estado = RIGHT
-            jugador.recorrer_imagenes()
-
-        if s_bandera:
-            jugador.mover_abajo()
-            jugador.estado = DOWN
-            jugador.recorrer_imagenes()
+        if not w_bandera and not d_bandera and not s_bandera and not a_bandera:
+            jugador.quedarse_quieto()
 
         if a_bandera:
             jugador.mover_izquierda()
-            jugador.estado = LEFT
-            jugador.recorrer_imagenes()
+
+        if d_bandera:
+            jugador.mover_derecha()
+
+        if w_bandera:
+            jugador.mover_arriba()
+
+        if s_bandera:
+            jugador.mover_abajo()
 
         if space_bandera:
             jugador.golpear()
-            jugador.recorrer_imagenes()
+        else:
+            jugador.no_golpear()
 
-        if w_bandera and d_bandera:
-            jugador.estado = UP
-            jugador.recorrer_imagenes()
-
-        if d_bandera and s_bandera:
-            jugador.estado = DOWN
-            jugador.recorrer_imagenes()
-
-        if s_bandera and a_bandera:
-            jugador.estado = DOWN
-            jugador.recorrer_imagenes()
-
-        if a_bandera and w_bandera:
-            jugador.estado = UP
-            jugador.recorrer_imagenes()
-
-        if w_bandera and space_bandera:
-            jugador.estado = PUNCH_UP
-            jugador.mover_abajo()
-            jugador.recorrer_imagenes()
-
-        if d_bandera and space_bandera:
-            jugador.estado = PUNCH_RIGHT
-            jugador.mover_izquierda()
-            jugador.recorrer_imagenes()
-
-        if s_bandera and space_bandera:
-            jugador.estado = PUNCH_DOWN
-            jugador.mover_arriba()
-            jugador.recorrer_imagenes()
-
-        if a_bandera and space_bandera:
-            jugador.estado = PUNCH_LEFT
-            jugador.mover_derecha()
-            jugador.recorrer_imagenes()
-
-        if w_bandera and d_bandera and space_bandera:
-            jugador.estado = PUNCH_UP
-            jugador.recorrer_imagenes()
-
-        if d_bandera and s_bandera and space_bandera:
-            jugador.estado = PUNCH_DOWN
-            jugador.recorrer_imagenes()
-
-        if s_bandera and a_bandera and space_bandera:
-            jugador.estado = PUNCH_DOWN
-            jugador.recorrer_imagenes()
-
-        if a_bandera and w_bandera and space_bandera:
-            jugador.estado = PUNCH_UP
-            jugador.recorrer_imagenes()
-
-        if enemigo.posicion[1] > jugador.posicion[1] and (jugador.estado == UP or jugador.estado == DOWN):
-            enemigo.estado = UP
-
-        if enemigo.posicion[0] < jugador.posicion[0] and (jugador.estado == RIGHT or jugador.estado == LEFT):
-            enemigo.estado = RIGHT
-
-        if enemigo.posicion[1] < jugador.posicion[1] and (jugador.estado == DOWN or jugador.estado == UP):
-            enemigo.estado = DOWN
-
-        if enemigo.posicion[0] > jugador.posicion[0] and (jugador.estado == LEFT or jugador.estado == RIGHT):
-            enemigo.estado = LEFT
-        enemigo.recorrer_imagenes()
+        jugador.recorrer_imagenes()
 
         jugador.dibujar(pantalla)
 
         enemigo.movimiento_trayectoria(jugador.posicion)
 
+        enemigo.recorrer_imagenes()
+
         enemigo.dibujar(pantalla)
 
         jugador.detectar_colision(enemigo)
-
-        if enemigo.golpeado:
-            enemigo.estado = DOWN
 
         pygame.display.update()
 
