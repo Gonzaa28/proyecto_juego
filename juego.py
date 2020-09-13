@@ -1,3 +1,5 @@
+from random import randint
+
 import pygame
 import pygame_menu
 import os
@@ -18,7 +20,6 @@ PUNCH_UP = 4
 PUNCH_RIGHT = 5
 PUNCH_DOWN = 6
 PUNCH_LEFT = 7
-
 
 # pygame.time.get_ticks()
 
@@ -105,6 +106,7 @@ class Jugador(ObjetoJuego):
         super(Jugador, self).__init__(imagenes=imagenes, pos_x=int(ANCHO / 2), pos_y=int(ALTO / 2), estado=0,
                                       animacion=0, velocidad=5)
 
+
 class Enemigo(ObjetoJuego):
     def __init__(self, dimensiones =(60, 60)):
         imagenes = [
@@ -115,13 +117,38 @@ class Enemigo(ObjetoJuego):
             [pygame.transform.scale(pygame.image.load("imagenes/enemigo/right1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/right2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/right3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/right4.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/right5.png"), dimensiones)
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/right4.png"), dimensiones)
              ],
+            [pygame.transform.scale(pygame.image.load("imagenes/enemigo/down1.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/down2.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/down3.png"), dimensiones)
+             ],
+            [pygame.transform.scale(pygame.image.load("imagenes/enemigo/left1.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/left2.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/left3.png"), dimensiones),
+             pygame.transform.scale(pygame.image.load("imagenes/enemigo/left4.png"), dimensiones),
+             ]
         ]
 
         super(Enemigo, self).__init__(imagenes=imagenes, pos_x=int(80), pos_y=int(ALTO / 2), estado=0,
-                                  animacion=0, velocidad=5)
+                                  animacion=0, velocidad=4)
+
+        #EL DESTINO (EN X (60 HASTA ANCHO-60),EN Y (60 HASTA ALTO-60)) PARA NO PASARSE DE LA PANTALLA
+        self.destino = (0, 0)
+
+    def movimiento_trayectoria(self,pos_jugador):
+
+        if self.posicion == pos_jugador:
+            pass
+
+        if self.posicion[0] <= pos_jugador[0]:
+            self.mover_derecha()
+        if self.posicion[0] >= pos_jugador[0]:
+            self.mover_izquierda()
+        if self.posicion[1] >= pos_jugador[1]:
+            self.mover_arriba()
+        if self.posicion[1] <= pos_jugador[1]:
+            self.mover_abajo()
 
 reloj = pygame.time.Clock()
 
@@ -138,18 +165,18 @@ def funcion():
     jugador = Jugador()
     enemigo = Enemigo()
 
+
     w_bandera = False
     d_bandera = False
     s_bandera = False
     a_bandera = False
     space_bandera = False
-    enemigo_up_bandera = False
-    enemigo_right_bandera = False
+    shift_bandera = False
+
 
     corriendo = True
     contador = 0
     while corriendo:
-
         contador += 5
 
         for evento in pygame.event.get():
@@ -178,14 +205,10 @@ def funcion():
                 space_bandera = True
             if evento.type == pygame.KEYUP and evento.key == pygame.K_SPACE:
                 space_bandera = False
-            if evento.type == pygame.KEYDOWN and evento.key == pygame.K_KP8:
-                enemigo_up_bandera = True
-            if evento.type == pygame.KEYUP and evento.key == pygame.K_KP8:
-                enemigo_up_bandera = False
-
 
         pantalla.blit(fondo, jugador.posicion, jugador.posicion)
         pantalla.blit(fondo, enemigo.posicion, enemigo.posicion)
+
 
         if not w_bandera and not d_bandera and not s_bandera and not a_bandera and not space_bandera:
             jugador.animacion = 0
@@ -234,10 +257,6 @@ def funcion():
 
         if jugador.estado is not PUNCH_RIGHT and jugador.estado is not PUNCH_DOWN and jugador.estado is not PUNCH_LEFT:
             ultimo_estado = jugador.estado
-
-        if enemigo_up_bandera is False:
-            enemigo.animacion = UP
-
 
         if space_bandera:
             if ultimo_estado == UP:
@@ -355,18 +374,13 @@ def funcion():
             if jugador.animacion > 3:
                 jugador.animacion = 0
 
-        if enemigo_up_bandera:
-            enemigo.estado = UP
-            enemigo.mover_arriba()
-            if enemigo.animacion > 2:
-                enemigo.animacion = 0
-            else:
-                enemigo.animacion += 1
-            if enemigo.animacion > 2:
-                enemigo.animacion = 0
 
         jugador.dibujar(pantalla)
+        enemigo.movimiento_trayectoria(jugador.posicion)
         enemigo.dibujar(pantalla)
+
+
+
 
         pygame.display.update()
 
