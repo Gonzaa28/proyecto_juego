@@ -1,3 +1,5 @@
+from random import randint
+
 import pygame
 import pygame_menu
 import os
@@ -64,6 +66,9 @@ class ObjetoJuego:
         if self.animacion > cant_animaciones:
             self.animacion = 0
 
+    def obtener_ultima_posicion_colision(self):
+        self.posicion = self.posicion
+
 
 class Jugador(ObjetoJuego):
     def __init__(self, dimensiones=(60, 60)):
@@ -82,7 +87,7 @@ class Jugador(ObjetoJuego):
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down4.png"), dimensiones),
-             # pygame.transform.scale(pygame.image.load("imagenes/jugador/down5.png"), dimensiones)
+             pygame.transform.scale(pygame.image.load("imagenes/jugador/down5.png"), dimensiones)
              ],
             [pygame.transform.scale(pygame.image.load("imagenes/jugador/left1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/left2.png"), dimensiones),
@@ -161,14 +166,15 @@ class Enemigo(ObjetoJuego):
              ]
         ]
 
-        super(Enemigo, self).__init__(imagenes=imagenes, pos_x=int(ANCHO/2), pos_y=0, estado=0, animacion=0,
-                                      velocidad=3)
+        super(Enemigo, self).__init__(imagenes=imagenes, pos_x=int(80), pos_y=int(ALTO / 2), estado=0, animacion=0,
+                                      velocidad=4)
         self.destino = (0, 0)
         self.golpeado = False
 
     def movimiento_trayectoria(self, pos_jugador):
         if self.posicion == pos_jugador:
             pass
+
         if self.posicion[0] <= pos_jugador[0]:
             self.mover_derecha()
         if self.posicion[0] >= pos_jugador[0]:
@@ -177,7 +183,6 @@ class Enemigo(ObjetoJuego):
             self.mover_arriba()
         if self.posicion[1] <= pos_jugador[1]:
             self.mover_abajo()
-
 
 reloj = pygame.time.Clock()
 
@@ -194,11 +199,14 @@ def funcion():
     jugador = Jugador()
     enemigo = Enemigo()
 
+
     w_bandera = False
     d_bandera = False
     s_bandera = False
     a_bandera = False
     space_bandera = False
+    shift_bandera = False
+
 
     corriendo = True
 
@@ -333,13 +341,14 @@ def funcion():
             enemigo.recorrer_imagenes()
 
         jugador.dibujar(pantalla)
-
         enemigo.movimiento_trayectoria(jugador.posicion)
         jugador.detectar_colision(enemigo)
         enemigo.dibujar(pantalla)
 
         if enemigo.golpeado:
            enemigo.estado = DOWN
+           pos_colision = enemigo.obtener_ultima_posicion_colision()
+           print(pos_colision)
         else:
             enemigo.estado = UP
 
