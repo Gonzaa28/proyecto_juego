@@ -1,3 +1,5 @@
+from random import randint
+
 import pygame
 import pygame_menu
 import os
@@ -82,7 +84,7 @@ class Jugador(ObjetoJuego):
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down4.png"), dimensiones),
-             # pygame.transform.scale(pygame.image.load("imagenes/jugador/down5.png"), dimensiones)
+             pygame.transform.scale(pygame.image.load("imagenes/jugador/down5.png"), dimensiones)
              ],
             [pygame.transform.scale(pygame.image.load("imagenes/jugador/left1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/left2.png"), dimensiones),
@@ -130,6 +132,13 @@ class Jugador(ObjetoJuego):
         if self.obtener_ultimo_estado() == LEFT:
             self.estado = PUNCH_LEFT
 
+    def detectar_colision(self,enemigo):
+
+        if self.posicion.top <= enemigo.posicion.bottom and self.posicion.bottom >= enemigo.posicion.top \
+                and self.posicion.right >= enemigo.posicion.left and self.posicion.left <= enemigo.posicion.right:
+            enemigo.golpeado = True
+        else:
+            enemigo.golpeado = False
 
 class Enemigo(ObjetoJuego):
     def __init__(self, dimensiones =(60, 60)):
@@ -157,10 +166,12 @@ class Enemigo(ObjetoJuego):
         super(Enemigo, self).__init__(imagenes=imagenes, pos_x=int(80), pos_y=int(ALTO / 2), estado=0, animacion=0,
                                       velocidad=4)
         self.destino = (0, 0)
+        self.golpeado = False
 
     def movimiento_trayectoria(self, pos_jugador):
         if self.posicion == pos_jugador:
             pass
+
         if self.posicion[0] <= pos_jugador[0]:
             self.mover_derecha()
         if self.posicion[0] >= pos_jugador[0]:
@@ -169,7 +180,6 @@ class Enemigo(ObjetoJuego):
             self.mover_arriba()
         if self.posicion[1] <= pos_jugador[1]:
             self.mover_abajo()
-
 
 reloj = pygame.time.Clock()
 
@@ -186,11 +196,14 @@ def funcion():
     jugador = Jugador()
     enemigo = Enemigo()
 
+
     w_bandera = False
     d_bandera = False
     s_bandera = False
     a_bandera = False
     space_bandera = False
+    shift_bandera = False
+
 
     corriendo = True
 
@@ -310,7 +323,13 @@ def funcion():
 
         jugador.dibujar(pantalla)
         enemigo.movimiento_trayectoria(jugador.posicion)
+        jugador.detectar_colision(enemigo)
         enemigo.dibujar(pantalla)
+
+        if enemigo.golpeado:
+           enemigo.estado = DOWN
+        else:
+            enemigo.estado = UP
 
         pygame.display.update()
 
