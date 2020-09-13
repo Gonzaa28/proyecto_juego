@@ -23,7 +23,7 @@ PUNCH_LEFT = 7
 
 
 class ObjetoJuego:
-    def __init__(self, imagenes, pos_x, pos_y, estado, animacion, velocidad):
+    def __init__(self, imagenes, pos_x, pos_y, estado, animacion, velocidad, vida=10, poder_ataque=2):
         self.imagenes = imagenes
         self.pos_x = pos_x
         self.pos_y = pos_y
@@ -33,6 +33,9 @@ class ObjetoJuego:
         self.velocidad = velocidad
         self.golpeando = False
         self.caminando = False
+        self.ultimo_estado = self.estado
+        self.vida = vida
+        self.poder_ataque = poder_ataque
 
     def dibujar(self, pantalla):
         pantalla.blit(self.imagenes[self.estado][self.animacion], self.posicion)
@@ -46,6 +49,7 @@ class ObjetoJuego:
             if self.posicion.top < 0:
                 self.posicion.top = 0
         self.caminando = True
+        self.ultimo_estado = UP
 
     def mover_derecha(self):
         if self.golpeando:
@@ -56,6 +60,7 @@ class ObjetoJuego:
             if self.posicion.right > ANCHO:
                 self.posicion.right = ANCHO
         self.caminando = True
+        self.ultimo_estado = RIGHT
 
     def mover_abajo(self):
         if self.golpeando:
@@ -66,6 +71,7 @@ class ObjetoJuego:
             if self.posicion.bottom > ALTO:
                 self.posicion.bottom = ALTO
         self.caminando = True
+        self.ultimo_estado = DOWN
 
     def mover_izquierda(self):
         if self.golpeando:
@@ -76,6 +82,7 @@ class ObjetoJuego:
             if self.posicion.left < 0:
                 self.posicion.left = 0
         self.caminando = True
+        self.ultimo_estado = LEFT
 
     def recorrer_imagenes(self):
         if self.caminando or self.golpeando:
@@ -92,78 +99,6 @@ class ObjetoJuego:
     def quedarse_quieto(self):
         self.caminando = False
 
-
-class Jugador(ObjetoJuego):
-    def __init__(self, dimensiones=(60, 60)):
-        imagenes = {
-            UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/up1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/up2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/up3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/up4.png"), dimensiones)
-             ],
-            RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/right1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/right2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/right3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/right4.png"), dimensiones)
-             ],
-            DOWN: [pygame.transform.scale(pygame.image.load("imagenes/jugador/down1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/down2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/down3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/down4.png"), dimensiones),
-             # pygame.transform.scale(pygame.image.load("imagenes/jugador/down5.png"), dimensiones)
-             ],
-            LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/left1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/left2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/left3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/left4.png"), dimensiones)
-             ],
-            PUNCH_UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup4.png"), dimensiones)
-             ],
-            PUNCH_RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright4.png"), dimensiones)
-             ],
-            PUNCH_DOWN: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown4.png"), dimensiones)
-             ],
-            PUNCH_LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft4.png"), dimensiones)
-             ]
-        }
-        super(Jugador, self).__init__(imagenes=imagenes, pos_x=int(ANCHO / 2), pos_y=int(ALTO / 2), estado=0,
-                                      animacion=0, velocidad=5)
-        self.ultimo_estado = 0
-
-    def mover_arriba(self):
-        super(Jugador, self).mover_arriba()
-        self.ultimo_estado = UP
-
-    def mover_derecha(self):
-        super(Jugador, self).mover_derecha()
-        self.ultimo_estado = RIGHT
-
-    def mover_abajo(self):
-        super(Jugador, self).mover_abajo()
-        self.ultimo_estado = DOWN
-
-    def mover_izquierda(self):
-        super(Jugador, self).mover_izquierda()
-        self.ultimo_estado = LEFT
-
-    # def obtener_ultimo_estado(self):
-    #     if self.estado != PUNCH_UP and self.estado != PUNCH_RIGHT and self.estado != PUNCH_DOWN \
-    #             and self.estado != PUNCH_LEFT:
-    #         self.ultimo_estado = self.estado
-    #     return self.ultimo_estado
-
     def golpear(self):
         self.golpeando = True
         if self.ultimo_estado == UP:
@@ -179,38 +114,140 @@ class Jugador(ObjetoJuego):
         self.golpeando = False
         self.estado = self.ultimo_estado
 
-    def detectar_colision(self,enemigo):
-        if self.posicion.top <= enemigo.posicion.bottom and self.posicion.bottom >= enemigo.posicion.top \
-                and self.posicion.right >= enemigo.posicion.left and self.posicion.left <= enemigo.posicion.right:
-            enemigo.golpeado = True
+    def detectar_colision(self, lista):
+        flag = False
+        for enemigo in lista:
+            if self.posicion.top <= enemigo.posicion.bottom and self.posicion.bottom >= enemigo.posicion.top \
+                    and self.posicion.right >= enemigo.posicion.left and self.posicion.left <= enemigo.posicion.right:
+                enemigo.caminando = False
+                flag = True
+            else:
+                enemigo.caminando = True
+        return flag
+
+    def modificar_poder_ataque(self):
+        return self.poder_ataque
+    
+
+class Jugador(ObjetoJuego):
+    def __init__(self, dimensiones=(60, 60)):
+        imagenes = {
+            UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/up1.png"), dimensiones),
+                 pygame.transform.scale(pygame.image.load("imagenes/jugador/up2.png"), dimensiones),
+                 pygame.transform.scale(pygame.image.load("imagenes/jugador/up3.png"), dimensiones),
+                 pygame.transform.scale(pygame.image.load("imagenes/jugador/up4.png"), dimensiones)
+                 ],
+            RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/right1.png"), dimensiones),
+                    pygame.transform.scale(pygame.image.load("imagenes/jugador/right2.png"), dimensiones),
+                    pygame.transform.scale(pygame.image.load("imagenes/jugador/right3.png"), dimensiones),
+                    pygame.transform.scale(pygame.image.load("imagenes/jugador/right4.png"), dimensiones)
+                    ],
+            DOWN: [pygame.transform.scale(pygame.image.load("imagenes/jugador/down1.png"), dimensiones),
+                   pygame.transform.scale(pygame.image.load("imagenes/jugador/down2.png"), dimensiones),
+                   pygame.transform.scale(pygame.image.load("imagenes/jugador/down3.png"), dimensiones),
+                   pygame.transform.scale(pygame.image.load("imagenes/jugador/down4.png"), dimensiones),
+                   # pygame.transform.scale(pygame.image.load("imagenes/jugador/down5.png"), dimensiones)
+                   ],
+            LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/left1.png"), dimensiones),
+                   pygame.transform.scale(pygame.image.load("imagenes/jugador/left2.png"), dimensiones),
+                   pygame.transform.scale(pygame.image.load("imagenes/jugador/left3.png"), dimensiones),
+                   pygame.transform.scale(pygame.image.load("imagenes/jugador/left4.png"), dimensiones)
+                   ],
+            PUNCH_UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup1.png"), dimensiones),
+                       pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup2.png"), dimensiones),
+                       pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup3.png"), dimensiones),
+                       pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup4.png"), dimensiones)
+                       ],
+            PUNCH_RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright1.png"), dimensiones),
+                          pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright2.png"), dimensiones),
+                          pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright3.png"), dimensiones),
+                          pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright4.png"), dimensiones)
+                          ],
+            PUNCH_DOWN: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown1.png"), dimensiones),
+                         pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown2.png"), dimensiones),
+                         pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown3.png"), dimensiones),
+                         pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown4.png"), dimensiones)
+                         ],
+            PUNCH_LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft1.png"), dimensiones),
+                         pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft2.png"), dimensiones),
+                         pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft3.png"), dimensiones),
+                         pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft4.png"), dimensiones)
+                         ]
+        }
+        super(Jugador, self).__init__(imagenes=imagenes, pos_x=int(ANCHO / 2), pos_y=int(ALTO / 2), estado=0,
+                                      animacion=0, velocidad=5)
+        
+    def procesar_accion(self, acciones):
+        if not acciones['w_bandera'] and not acciones['d_bandera'] and not acciones['s_bandera'] and not\
+                acciones['a_bandera']:
+            self.quedarse_quieto()
+
+        if acciones['a_bandera']:
+            self.mover_izquierda()
+
+        if acciones['d_bandera']:
+            self.mover_derecha()
+
+        if acciones['w_bandera']:
+            self.mover_arriba()
+
+        if acciones['s_bandera']:
+            self.mover_abajo()
+
+        if acciones['space_bandera']:
+            self.golpear()
         else:
-            enemigo.golpeado = False
+            self.no_golpear()
 
 
 class Enemigo(ObjetoJuego):
-    def __init__(self, dimensiones =(60, 60)):
+    def __init__(self, dimensiones=(70, 70)):
         imagenes = {
             UP: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/up1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/up2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/up3.png"), dimensiones)
-             ],
+                 pygame.transform.scale(pygame.image.load("imagenes/enemigo/up2.png"), dimensiones),
+                 pygame.transform.scale(pygame.image.load("imagenes/enemigo/up3.png"), dimensiones)
+                 ],
             RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/right1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/right2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/right3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/right4.png"), dimensiones)
-             ],
+                    pygame.transform.scale(pygame.image.load("imagenes/enemigo/right2.png"), dimensiones),
+                    pygame.transform.scale(pygame.image.load("imagenes/enemigo/right3.png"), dimensiones),
+                    pygame.transform.scale(pygame.image.load("imagenes/enemigo/right4.png"), dimensiones)
+                    ],
             DOWN: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/down1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/down2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/down3.png"), dimensiones)
-             ],
+                   pygame.transform.scale(pygame.image.load("imagenes/enemigo/down2.png"), dimensiones),
+                   pygame.transform.scale(pygame.image.load("imagenes/enemigo/down3.png"), dimensiones)
+                   ],
             LEFT: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/left1.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/left2.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/left3.png"), dimensiones),
-             pygame.transform.scale(pygame.image.load("imagenes/enemigo/left4.png"), dimensiones),
-             ]
+                   pygame.transform.scale(pygame.image.load("imagenes/enemigo/left2.png"), dimensiones),
+                   pygame.transform.scale(pygame.image.load("imagenes/enemigo/left3.png"), dimensiones),
+                   pygame.transform.scale(pygame.image.load("imagenes/enemigo/left4.png"), dimensiones),
+                   ],
+            PUNCH_RIGHT: [
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchright1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchright2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchright3.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchright4.png"), dimensiones)
+            ],
+            PUNCH_UP: [
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchup1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchup2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchup3.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchup4.png"), dimensiones)
+            ],
+            PUNCH_DOWN: [
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchdown1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchdown2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchdown3.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchdown4.png"), dimensiones)
+            ],
+            PUNCH_LEFT: [
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchleft1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchleft2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchleft3.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchleft4.png"), dimensiones)
+            ],
         }
 
-        super(Enemigo, self).__init__(imagenes=imagenes, pos_x=int(ANCHO/2), pos_y=0, estado=0, animacion=0,
+        super(Enemigo, self).__init__(imagenes=imagenes, pos_x=int(ANCHO / 2), pos_y=0, estado=0, animacion=0,
                                       velocidad=3)
         self.destino = (0, 0)
         self.golpeado = False
@@ -218,7 +255,7 @@ class Enemigo(ObjetoJuego):
     def movimiento_trayectoria(self, pos_jugador):
         diferencia_x = abs(self.posicion[0] - pos_jugador[0])
         diferencia_y = abs(self.posicion[1] - pos_jugador[1])
-        if self.golpeado:
+        if not self.caminando:
             self.quedarse_quieto()
         elif diferencia_x < diferencia_y:
             if self.posicion == pos_jugador:
@@ -243,6 +280,18 @@ class Enemigo(ObjetoJuego):
             if self.posicion[0] > pos_jugador[0]:
                 self.mover_izquierda()
 
+    def detectar_colision(self, lista):
+        colision = super(Enemigo, self).detectar_colision(lista)
+        if colision:
+            self.golpear()
+        else:
+            self.no_golpear()
+        return colision
+
+
+class Nivel:
+    pass
+
 
 reloj = pygame.time.Clock()
 
@@ -259,12 +308,14 @@ def funcion():
     jugador = Jugador()
     enemigo = Enemigo()
 
-    w_bandera = False
-    d_bandera = False
-    s_bandera = False
-    a_bandera = False
-    space_bandera = False
-
+    banderas = {
+        'w_bandera': False,
+        'd_bandera': False,
+        's_bandera': False,
+        'a_bandera': False,
+        'space_bandera': False
+    }
+    
     corriendo = True
 
     while corriendo:
@@ -276,48 +327,30 @@ def funcion():
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                 corriendo = False
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_w:
-                w_bandera = True
+                banderas['w_bandera'] = True
             if evento.type == pygame.KEYUP and evento.key == pygame.K_w:
-                w_bandera = False
+                banderas['w_bandera'] = False
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_d:
-                d_bandera = True
+                banderas['d_bandera'] = True
             if evento.type == pygame.KEYUP and evento.key == pygame.K_d:
-                d_bandera = False
+                banderas['d_bandera'] = False
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_s:
-                s_bandera = True
+                banderas['s_bandera'] = True
             if evento.type == pygame.KEYUP and evento.key == pygame.K_s:
-                s_bandera = False
+                banderas['s_bandera'] = False
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_a:
-                a_bandera = True
+                banderas['a_bandera'] = True
             if evento.type == pygame.KEYUP and evento.key == pygame.K_a:
-                a_bandera = False
+                banderas['a_bandera'] = False
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
-                space_bandera = True
+                banderas['space_bandera'] = True
             if evento.type == pygame.KEYUP and evento.key == pygame.K_SPACE:
-                space_bandera = False
+                banderas['space_bandera'] = False
 
         pantalla.blit(fondo, jugador.posicion, jugador.posicion)
         pantalla.blit(fondo, enemigo.posicion, enemigo.posicion)
 
-        if not w_bandera and not d_bandera and not s_bandera and not a_bandera:
-            jugador.quedarse_quieto()
-
-        if a_bandera:
-            jugador.mover_izquierda()
-
-        if d_bandera:
-            jugador.mover_derecha()
-
-        if w_bandera:
-            jugador.mover_arriba()
-
-        if s_bandera:
-            jugador.mover_abajo()
-
-        if space_bandera:
-            jugador.golpear()
-        else:
-            jugador.no_golpear()
+        jugador.procesar_accion(banderas)
 
         jugador.recorrer_imagenes()
 
@@ -329,7 +362,9 @@ def funcion():
 
         enemigo.dibujar(pantalla)
 
-        jugador.detectar_colision(enemigo)
+        jugador.detectar_colision([enemigo])
+
+        enemigo.detectar_colision([jugador])
 
         pygame.display.update()
 
