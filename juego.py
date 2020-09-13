@@ -33,9 +33,7 @@ class ObjetoJuego:
         self.velocidad = velocidad
 
     def dibujar(self, pantalla):
-        print(type(self), self.estado, self.animacion)
         pantalla.blit(self.imagenes[self.estado][self.animacion], self.posicion)
-
 
     def mover_arriba(self):
         self.posicion = self.posicion.move(0, -self.velocidad)
@@ -165,9 +163,9 @@ class Enemigo(ObjetoJuego):
         ]
 
         super(Enemigo, self).__init__(imagenes=imagenes, pos_x=int(ANCHO/2), pos_y=0, estado=0, animacion=0,
-                                      velocidad=1)
+                                      velocidad=3)
         self.destino = (0, 0)
-        self.golpeado = True
+        self.golpeado = False
 
     def movimiento_trayectoria(self, pos_jugador):
         if self.posicion == pos_jugador:
@@ -180,6 +178,7 @@ class Enemigo(ObjetoJuego):
             self.mover_arriba()
         if self.posicion[1] <= pos_jugador[1]:
             self.mover_abajo()
+
 
 reloj = pygame.time.Clock()
 
@@ -335,7 +334,9 @@ def funcion():
             enemigo.recorrer_imagenes()
 
         jugador.dibujar(pantalla)
+
         enemigo.movimiento_trayectoria(jugador.posicion)
+
         enemigo.dibujar(pantalla)
 
         jugador.detectar_colision(enemigo)
@@ -346,6 +347,7 @@ def funcion():
         pygame.display.update()
 
         reloj.tick(15)
+
 
 menu = pygame_menu.Menu(600, 800, 'Bienvenido', theme=pygame_menu.themes.THEME_DARK)
 menu.add_text_input('Nombre: ')
