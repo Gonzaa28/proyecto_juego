@@ -319,19 +319,16 @@ def funcion():
 
         if enemigo.posicion[1] > jugador.posicion[1] and (jugador.estado == UP or jugador.estado == DOWN):
             enemigo.estado = UP
-            enemigo.recorrer_imagenes()
 
         if enemigo.posicion[0] < jugador.posicion[0] and (jugador.estado == RIGHT or jugador.estado == LEFT):
             enemigo.estado = RIGHT
-            enemigo.recorrer_imagenes()
 
         if enemigo.posicion[1] < jugador.posicion[1] and (jugador.estado == DOWN or jugador.estado == UP):
             enemigo.estado = DOWN
-            enemigo.recorrer_imagenes()
 
         if enemigo.posicion[0] > jugador.posicion[0] and (jugador.estado == LEFT or jugador.estado == RIGHT):
             enemigo.estado = LEFT
-            enemigo.recorrer_imagenes()
+        enemigo.recorrer_imagenes()
 
         jugador.dibujar(pantalla)
 
