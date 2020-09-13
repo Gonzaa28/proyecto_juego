@@ -95,49 +95,49 @@ class ObjetoJuego:
 
 class Jugador(ObjetoJuego):
     def __init__(self, dimensiones=(60, 60)):
-        imagenes = [
-            [pygame.transform.scale(pygame.image.load("imagenes/jugador/up1.png"), dimensiones),
+        imagenes = {
+            UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/up1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/up2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/up3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/up4.png"), dimensiones)
              ],
-            [pygame.transform.scale(pygame.image.load("imagenes/jugador/right1.png"), dimensiones),
+            RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/right1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/right2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/right3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/right4.png"), dimensiones)
              ],
-            [pygame.transform.scale(pygame.image.load("imagenes/jugador/down1.png"), dimensiones),
+            DOWN: [pygame.transform.scale(pygame.image.load("imagenes/jugador/down1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/down4.png"), dimensiones),
              # pygame.transform.scale(pygame.image.load("imagenes/jugador/down5.png"), dimensiones)
              ],
-            [pygame.transform.scale(pygame.image.load("imagenes/jugador/left1.png"), dimensiones),
+            LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/left1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/left2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/left3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/left4.png"), dimensiones)
              ],
-            [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup1.png"), dimensiones),
+            PUNCH_UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup4.png"), dimensiones)
              ],
-            [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright1.png"), dimensiones),
+            PUNCH_RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright4.png"), dimensiones)
              ],
-            [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown1.png"), dimensiones),
+            PUNCH_DOWN: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown4.png"), dimensiones)
              ],
-            [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft1.png"), dimensiones),
+            PUNCH_LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft4.png"), dimensiones)
              ]
-        ]
+        }
         super(Jugador, self).__init__(imagenes=imagenes, pos_x=int(ANCHO / 2), pos_y=int(ALTO / 2), estado=0,
                                       animacion=0, velocidad=5)
         self.ultimo_estado = 0
@@ -189,26 +189,26 @@ class Jugador(ObjetoJuego):
 
 class Enemigo(ObjetoJuego):
     def __init__(self, dimensiones =(60, 60)):
-        imagenes = [
-            [pygame.transform.scale(pygame.image.load("imagenes/enemigo/up1.png"), dimensiones),
+        imagenes = {
+            UP: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/up1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/up2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/up3.png"), dimensiones)
              ],
-            [pygame.transform.scale(pygame.image.load("imagenes/enemigo/right1.png"), dimensiones),
+            RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/right1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/right2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/right3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/right4.png"), dimensiones)
              ],
-            [pygame.transform.scale(pygame.image.load("imagenes/enemigo/down1.png"), dimensiones),
+            DOWN: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/down1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/down2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/down3.png"), dimensiones)
              ],
-            [pygame.transform.scale(pygame.image.load("imagenes/enemigo/left1.png"), dimensiones),
+            LEFT: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/left1.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/left2.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/left3.png"), dimensiones),
              pygame.transform.scale(pygame.image.load("imagenes/enemigo/left4.png"), dimensiones),
              ]
-        ]
+        }
 
         super(Enemigo, self).__init__(imagenes=imagenes, pos_x=int(ANCHO/2), pos_y=0, estado=0, animacion=0,
                                       velocidad=3)
