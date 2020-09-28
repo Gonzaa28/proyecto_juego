@@ -24,7 +24,7 @@ PUNCH_LEFT = 7
 
 class ObjetoJuego:
     def __init__(self, imagenes, pos_x, pos_y, estado, animacion, velocidad, vida=10, poder_ataque=2,
-                 cooldown_disparo=500):
+                 cooldown_ataque=500):
         self.imagenes = imagenes
         self.pos_x = pos_x
         self.pos_y = pos_y
@@ -38,8 +38,8 @@ class ObjetoJuego:
         self.vida = vida
         self.poder_ataque = poder_ataque
         self.ultimo_dibujo_tiempo = pygame.time.get_ticks()
-        self.cooldown_disparo = cooldown_disparo
-        self.tiempo_disparo = pygame.time.get_ticks()
+        self.cooldown_ataque = cooldown_ataque
+        self.tiempo_ataque = pygame.time.get_ticks()
 
     def dibujar(self, pantalla):
         try:
@@ -172,7 +172,7 @@ class Jugador(ObjetoJuego):
                          ]
         }
         super(Jugador, self).__init__(imagenes=imagenes, pos_x=int(ANCHO / 2), pos_y=int(ALTO / 2), estado=0,
-                                      animacion=0, velocidad=5)
+                                      animacion=0, velocidad=7, vida=15)
         self.lista_disparos = []
 
     def procesar_accion(self, acciones):
@@ -211,8 +211,8 @@ class Jugador(ObjetoJuego):
         pantalla.blit(texto, (rectangulo[0], rectangulo[1]))
 
     def disparar(self):
-        if self.cooldown_disparo + self.tiempo_disparo <= pygame.time.get_ticks():
-            self.tiempo_disparo = pygame.time.get_ticks()
+        if self.cooldown_ataque + self.tiempo_ataque <= pygame.time.get_ticks():
+            self.tiempo_ataque = pygame.time.get_ticks()
             self.lista_disparos.append(Disparo(self.posicion.centerx, self.posicion.centery, self.ultimo_estado))
             self.golpear()
 
@@ -294,7 +294,7 @@ class Enemigo(ObjetoJuego):
         }
 
         super(Enemigo, self).__init__(imagenes=imagenes, pos_x=pos_x, pos_y=pos_y, estado=0, animacion=0,
-                                      velocidad=3)
+                                      velocidad=2,cooldown_ataque=3000)
         self.destino = (0, 0)
         self.golpeado = False
 
@@ -345,6 +345,12 @@ class Enemigo(ObjetoJuego):
         rectangulo.bottom = self.posicion.top
         rectangulo.centerx = self.posicion.centerx
         pantalla.blit(texto, (rectangulo[0], rectangulo[1]))
+
+    def golpe_enemigo(self,objeto_golpeado=None):
+
+            if self.cooldown_ataque + self.tiempo_ataque <= pygame.time.get_ticks():
+                self.tiempo_ataque = pygame.time.get_ticks()
+                self.golpear(objeto_golpeado)
 
 
 class Nivel:
@@ -425,7 +431,7 @@ def funcion():
             debe_golpear = False
             for x in enemigo.detectar_colision([jugador]):
                 debe_golpear = True
-                enemigo.golpear(jugador)
+                enemigo.golpe_enemigo(jugador)
                 if jugador.vida <= 0:
                     corriendo = False
             if not debe_golpear:
@@ -440,7 +446,6 @@ def funcion():
         pygame.display.update()
 
         reloj.tick(15)
-
 
 menu = pygame_menu.Menu(600, 800, 'Bienvenido', theme=pygame_menu.themes.THEME_DARK)
 menu.add_text_input('Nombre: ')
