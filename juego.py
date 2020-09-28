@@ -347,10 +347,9 @@ class Enemigo(ObjetoJuego):
         pantalla.blit(texto, (rectangulo[0], rectangulo[1]))
 
     def golpe_enemigo(self,objeto_golpeado=None):
-
-            if self.cooldown_ataque + self.tiempo_ataque <= pygame.time.get_ticks():
-                self.tiempo_ataque = pygame.time.get_ticks()
-                self.golpear(objeto_golpeado)
+        if self.cooldown_ataque + self.tiempo_ataque <= pygame.time.get_ticks():
+            self.tiempo_ataque = pygame.time.get_ticks()
+            self.golpear(objeto_golpeado)
 
 
 class Nivel:
