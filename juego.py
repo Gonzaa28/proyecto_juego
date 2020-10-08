@@ -1,6 +1,7 @@
 import pygame
 import pygame_menu
 from random import randint
+import math
 import os
 import sys
 from pygame.locals import *
@@ -23,7 +24,7 @@ PUNCH_LEFT = 7
 
 
 class ObjetoJuego:
-    def __init__(self, imagenes, pos_x, pos_y, estado, animacion, velocidad, vida=10, poder_ataque=2,
+    def __init__(self, imagenes, pos_x, pos_y, estado, animacion, velocidad, vida=70, poder_ataque=2,
                  cooldown_ataque=500):
         self.imagenes = imagenes
         self.pos_x = pos_x
@@ -140,7 +141,7 @@ class ObjetoJuego:
 
 
 class Jugador(ObjetoJuego):
-    def __init__(self, dimensiones=(60, 60)):
+    def __init__(self, dimensiones=(50, 50)):
         imagenes = {
             UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/up1.png"), dimensiones),
                  pygame.transform.scale(pygame.image.load("imagenes/jugador/up2.png"), dimensiones),
@@ -158,21 +159,22 @@ class Jugador(ObjetoJuego):
                    pygame.transform.scale(pygame.image.load("imagenes/jugador/left2.png"), dimensiones),
                    pygame.transform.scale(pygame.image.load("imagenes/jugador/left3.png"), dimensiones)
                    ],
-            PUNCH_UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup1.png"), dimensiones),
-                       pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup2.png"), dimensiones)
-                       ],
-            PUNCH_RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright1.png"), dimensiones),
-                          pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright2.png"), dimensiones)
-                          ],
-            PUNCH_DOWN: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown1.png"), dimensiones),
-                         pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown2.png"), dimensiones)
-                         ],
-            PUNCH_LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft1.png"), dimensiones),
-                         pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft2.png"), dimensiones)
-                         ]
+            PUNCH_UP: [  # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup2.png"), dimensiones)
+            ],
+            PUNCH_RIGHT: [
+                # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright2.png"), dimensiones)
+            ],
+            PUNCH_DOWN: [  # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown2.png"), dimensiones)
+            ],
+            PUNCH_LEFT: [  # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft2.png"), dimensiones)
+            ]
         }
         super(Jugador, self).__init__(imagenes=imagenes, pos_x=int(ANCHO / 2), pos_y=int(ALTO / 2), estado=0,
-                                      animacion=0, velocidad=7, vida=15)
+                                      animacion=0, velocidad=7, vida=60)
         self.lista_disparos = []
 
     def procesar_accion(self, acciones):
@@ -203,12 +205,14 @@ class Jugador(ObjetoJuego):
             except:
                 pass
         super(Jugador, self).dibujar(pantalla)
-        fuente = pygame.font.SysFont('Comic Sans MS', 15)
-        texto = fuente.render(f'{"".join(["-" for _ in range(self.vida)])}', False, (0, 255, 0))
-        rectangulo = texto.get_rect()
-        rectangulo.bottom = self.posicion.top
-        rectangulo.centerx = self.posicion.centerx
-        pantalla.blit(texto, (rectangulo[0], rectangulo[1]))
+        # fuente = pygame.font.SysFont('Comic Sans MS', 15)
+        # texto = fuente.render(f'{"".join(["-" for _ in range(self.vida)])}', False, (0, 255, 0))
+        # rectangulo = texto.get_rect()
+        # rectangulo.bottom = self.posicion.top
+        # rectangulo.centerx = self.posicion.centerx
+        # pantalla.blit(texto, (rectangulo[0], rectangulo[1]))
+        pygame.draw.rect(pantalla, (255, 0, 0), (self.posicion[0], self.posicion[1] - 10, self.posicion[2], 5))
+        pygame.draw.rect(pantalla, (0, 255, 0), (self.posicion[0], self.posicion[1] - 10, self.vida, 5))
 
     def disparar(self):
         if self.cooldown_ataque + self.tiempo_ataque <= pygame.time.get_ticks():
@@ -243,7 +247,7 @@ class Disparo(ObjetoJuego):
 
 
 class Enemigo(ObjetoJuego):
-    def __init__(self, pos_x=int(ANCHO / 2), pos_y=0, dimensiones=(70, 70)):
+    def __init__(self, pos_x=int(ANCHO / 2), pos_y=0, dimensiones=(60, 60)):
         imagenes = {
             UP: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/up1.png"), dimensiones),
                  pygame.transform.scale(pygame.image.load("imagenes/enemigo/up2.png"), dimensiones),
@@ -294,7 +298,7 @@ class Enemigo(ObjetoJuego):
         }
 
         super(Enemigo, self).__init__(imagenes=imagenes, pos_x=pos_x, pos_y=pos_y, estado=0, animacion=0,
-                                      velocidad=2,cooldown_ataque=3000)
+                                      velocidad=2, cooldown_ataque=500)
         self.destino = (0, 0)
         self.golpeado = False
 
@@ -339,14 +343,16 @@ class Enemigo(ObjetoJuego):
 
     def dibujar(self, pantalla):
         super(Enemigo, self).dibujar(pantalla)
-        fuente = pygame.font.SysFont('Comic Sans MS', 15)
-        texto = fuente.render(f'{"".join(["-" for _ in range(self.vida)])}', False, (255, 0, 0))
-        rectangulo = texto.get_rect()
-        rectangulo.bottom = self.posicion.top
-        rectangulo.centerx = self.posicion.centerx
-        pantalla.blit(texto, (rectangulo[0], rectangulo[1]))
+        # fuente = pygame.font.SysFont('Comic Sans MS', 15)
+        # texto = fuente.render(f'{"".join(["-" for _ in range(self.vida)])}', False, (255, 0, 0))
+        # rectangulo = texto.get_rect()
+        # rectangulo.bottom = self.posicion.top
+        # rectangulo.centerx = self.posicion.centerx
+        # pantalla.blit(texto, (rectangulo[0], rectangulo[1]))
+        pygame.draw.rect(pantalla, (255, 0, 0), (self.posicion[0], self.posicion[1] - 10, self.posicion[2], 5))
+        pygame.draw.rect(pantalla, (0, 255, 0), (self.posicion[0], self.posicion[1] - 10, self.vida, 5))
 
-    def golpe_enemigo(self,objeto_golpeado=None):
+    def golpe_enemigo(self, objeto_golpeado=None):
         if self.cooldown_ataque + self.tiempo_ataque <= pygame.time.get_ticks():
             self.tiempo_ataque = pygame.time.get_ticks()
             self.golpear(objeto_golpeado)
@@ -362,14 +368,14 @@ pantalla = pygame.display.set_mode(RESOLUCION)
 pygame.display.set_caption("Juego")
 icono = pygame.transform.scale(pygame.image.load("imagenes/jugador/down1.png"), (80, 80))
 pygame.display.set_icon(icono)
-fondo = pygame.transform.scale(pygame.image.load("imagenes/fondo.png"), (ANCHO, ALTO)).convert()
+fondo = pygame.transform.scale(pygame.image.load("imagenes/fondo.jpg"), (ANCHO, ALTO)).convert()
 
 
 def funcion():
     pantalla.blit(fondo, (0, 0))
 
     jugador = Jugador()
-    lista_enemigos = [Enemigo(pos_x=randint(1, int(ANCHO / 2)), pos_y=randint(1, 500)) for _ in range(4)]
+    lista_enemigos = [Enemigo(pos_x=randint(1, int(ANCHO / 2)), pos_y=randint(1, 500)) for _ in range(1)]
 
     banderas = {
         'w_bandera': False,
@@ -442,9 +448,12 @@ def funcion():
                 if enemigo.vida <= 0:
                     lista_enemigos.remove(enemigo)
 
+        # pygame.draw.rect(pantalla, (0, 0, 0), (0, 0, 50, 50))
+
         pygame.display.update()
 
         reloj.tick(15)
+
 
 menu = pygame_menu.Menu(600, 800, 'Bienvenido', theme=pygame_menu.themes.THEME_DARK)
 menu.add_text_input('Nombre: ')
