@@ -1,7 +1,7 @@
 import pygame
 import pygame_menu
+from pygame_menu.themes import Theme
 from random import randint
-import math
 import os
 import sys
 from pygame.locals import *
@@ -24,7 +24,7 @@ PUNCH_LEFT = 7
 
 
 class ObjetoJuego:
-    def __init__(self, imagenes, pos_x, pos_y, estado, animacion, velocidad, vida=70, poder_ataque=2,
+    def __init__(self, imagenes, pos_x, pos_y, estado, animacion, velocidad, vida=60, poder_ataque=2,
                  cooldown_ataque=500):
         self.imagenes = imagenes
         self.pos_x = pos_x
@@ -174,7 +174,7 @@ class Jugador(ObjetoJuego):
             ]
         }
         super(Jugador, self).__init__(imagenes=imagenes, pos_x=int(ANCHO / 2), pos_y=int(ALTO / 2), estado=0,
-                                      animacion=0, velocidad=7, vida=60)
+                                      animacion=0, velocidad=10, vida=50, poder_ataque=12)
         self.lista_disparos = []
 
     def procesar_accion(self, acciones):
@@ -222,7 +222,7 @@ class Jugador(ObjetoJuego):
 
 
 class Disparo(ObjetoJuego):
-    def __init__(self, pos_x, pos_y, estado, dimensiones_vertical=(15, 30), dimensiones_horizontal=(30, 15)):
+    def __init__(self, pos_x, pos_y, estado, dimensiones_vertical=(10, 25), dimensiones_horizontal=(25, 10)):
         imagenes = {
             UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/arrowup.png"), dimensiones_vertical)],
             RIGHT: [
@@ -231,7 +231,7 @@ class Disparo(ObjetoJuego):
             LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/arrowleft.png"), dimensiones_horizontal)]
         }
         super(Disparo, self).__init__(imagenes=imagenes, pos_x=pos_x, pos_y=pos_y, estado=estado, animacion=0,
-                                      velocidad=10)
+                                      velocidad=15)
         self.pos_x = pos_x
         self.pos_y = pos_y
 
@@ -368,14 +368,15 @@ pantalla = pygame.display.set_mode(RESOLUCION)
 pygame.display.set_caption("Juego")
 icono = pygame.transform.scale(pygame.image.load("imagenes/jugador/down1.png"), (80, 80))
 pygame.display.set_icon(icono)
-fondo = pygame.transform.scale(pygame.image.load("imagenes/fondo.jpg"), (ANCHO, ALTO)).convert()
+fondo = pygame.transform.scale(pygame.image.load("imagenes/fondo.png"), (ANCHO, ALTO)).convert()
+fuente = pygame.font.SysFont('Bauhaus 93', 25, False)
 
 
 def funcion():
     pantalla.blit(fondo, (0, 0))
 
     jugador = Jugador()
-    lista_enemigos = [Enemigo(pos_x=randint(1, int(ANCHO / 2)), pos_y=randint(1, 500)) for _ in range(1)]
+    lista_enemigos = [Enemigo(pos_x=randint(1, int(ANCHO)), pos_y=randint(1, 500)) for _ in range(3)]
 
     banderas = {
         'w_bandera': False,
@@ -384,6 +385,10 @@ def funcion():
         'a_bandera': False,
         'space_bandera': False
     }
+
+    score = 0
+    respawn = 5000
+    ultimo_enemigo = pygame.time.get_ticks()
 
     corriendo = True
 
@@ -418,6 +423,16 @@ def funcion():
 
         pantalla.blit(fondo, (0, 0))
 
+        if ultimo_enemigo + respawn <= pygame.time.get_ticks():
+            ultimo_enemigo = pygame.time.get_ticks()
+            lista_enemigos.append(Enemigo(pos_x=randint(1, int(ANCHO / 2)), pos_y=randint(1, 500)))
+
+        if score % 20 == 0 and score > 0 and respawn > 500:
+            respawn -= 10
+
+        texto = fuente.render(f'Score: {score}', False, (0, 0, 0))
+        pantalla.blit(texto, (5, 0))
+
         jugador.procesar_accion(banderas)
 
         jugador.recorrer_imagenes()
@@ -447,17 +462,45 @@ def funcion():
                 jugador.golpear(enemigo)
                 if enemigo.vida <= 0:
                     lista_enemigos.remove(enemigo)
-
-        # pygame.draw.rect(pantalla, (0, 0, 0), (0, 0, 50, 50))
+                    score += 5
 
         pygame.display.update()
 
         reloj.tick(15)
 
 
-menu = pygame_menu.Menu(600, 800, 'Bienvenido', theme=pygame_menu.themes.THEME_DARK)
-menu.add_text_input('Nombre: ')
-menu.add_selector('Dificultad:', [('Difícil', 1), ('Fácil', 2)])
-menu.add_button('Jugar', funcion)
-menu.add_button('Salir', pygame_menu.events.EXIT)
+imagen = pygame_menu.baseimage.BaseImage(
+    image_path='imagenes/fondo.png',
+    drawing_mode=pygame_menu.baseimage.IMAGE_MODE_REPEAT_XY,
+    drawing_offset=(0, 0))
+
+tema = Theme(background_color=imagen,
+             cursor_color=(0, 0, 0),
+             menubar_close_button=False,
+             selection_color=(0, 0, 0),
+             title_background_color=(255, 255, 255),
+             title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_NONE,
+             title_font=pygame_menu.font.FONT_MUNRO,
+             title_font_antialias=True,
+             title_font_color=(0, 0, 0),
+             title_font_size=75,
+             title_shadow=True,
+             title_shadow_color=(75, 75, 75),
+             title_offset=(ANCHO/2-86, 10),
+             widget_background_color=(0, 0, 0, 0),
+             widget_font=pygame_menu.font.FONT_MUNRO,
+             widget_font_antialias=True,
+             widget_font_color=(75, 75, 75),
+             widget_font_size=40,
+             widget_selection_effect=pygame_menu.widgets.selection.LeftArrowSelection(blink_ms=300),
+             widget_shadow=True,
+             widget_shadow_color=(75, 75, 75),
+             widget_shadow_offset=2)
+
+menu = pygame_menu.Menu(600, 800, 'Juego', theme=tema)
+
+menu.add_text_input('Name: ')
+menu.add_selector('Difficulty: ', [('Hard', 1), ('Medium', 2), ('Easy', 3)])
+menu.add_button('Play', funcion)
+menu.add_button('Exit', pygame_menu.events.EXIT)
 menu.mainloop(pantalla)
