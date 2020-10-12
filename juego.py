@@ -24,8 +24,8 @@ PUNCH_LEFT = 7
 
 
 class ObjetoJuego:
-    def __init__(self, imagenes, pos_x, pos_y, estado, animacion, velocidad, vida=60, poder_ataque=2,
-                 cooldown_ataque=500):
+    def __init__(self, imagenes, pos_x, pos_y, estado, animacion, velocidad, poder_ataque=2,
+                 cooldown_ataque=500, vida_inicial=50):
         self.imagenes = imagenes
         self.pos_x = pos_x
         self.pos_y = pos_y
@@ -36,7 +36,8 @@ class ObjetoJuego:
         self.golpeando = False
         self.caminando = True
         self.ultimo_estado = self.estado
-        self.vida = vida
+        self.vida_inicial = vida_inicial
+        self.vida = vida_inicial
         self.poder_ataque = poder_ataque
         self.ultimo_dibujo_tiempo = pygame.time.get_ticks()
         self.cooldown_ataque = cooldown_ataque
@@ -174,7 +175,7 @@ class Jugador(ObjetoJuego):
             ]
         }
         super(Jugador, self).__init__(imagenes=imagenes, pos_x=int(ANCHO / 2), pos_y=int(ALTO / 2), estado=0,
-                                      animacion=0, velocidad=10, vida=50, poder_ataque=12)
+                                      animacion=0, velocidad=10, vida_inicial=50, poder_ataque=12)
         self.lista_disparos = []
 
     def procesar_accion(self, acciones):
@@ -193,6 +194,8 @@ class Jugador(ObjetoJuego):
             self.disparar()
         else:
             self.no_golpear()
+        if acciones['f_bandera']:
+            self.curarse()
 
     def dibujar(self, pantalla):
         for disparo in reversed(self.lista_disparos):
@@ -211,7 +214,7 @@ class Jugador(ObjetoJuego):
         # rectangulo.bottom = self.posicion.top
         # rectangulo.centerx = self.posicion.centerx
         # pantalla.blit(texto, (rectangulo[0], rectangulo[1]))
-        pygame.draw.rect(pantalla, (255, 0, 0), (self.posicion[0], self.posicion[1] - 10, self.posicion[2], 5))
+        pygame.draw.rect(pantalla, (255, 0, 0), (self.posicion[0], self.posicion[1] - 10, self.vida_inicial, 5))
         pygame.draw.rect(pantalla, (0, 255, 0), (self.posicion[0], self.posicion[1] - 10, self.vida, 5))
 
     def disparar(self):
@@ -219,6 +222,11 @@ class Jugador(ObjetoJuego):
             self.tiempo_ataque = pygame.time.get_ticks()
             self.lista_disparos.append(Disparo(self.posicion.centerx, self.posicion.centery, self.ultimo_estado))
             self.golpear()
+
+    def curarse(self):
+        if self.vida < self.vida_inicial:
+            self.vida += 5
+
 
 
 class Disparo(ObjetoJuego):
@@ -253,7 +261,7 @@ class Enemigo(ObjetoJuego):
                  pygame.transform.scale(pygame.image.load("imagenes/enemigo/up2.png"), dimensiones),
                  pygame.transform.scale(pygame.image.load("imagenes/enemigo/up3.png"), dimensiones),
                  pygame.transform.scale(pygame.image.load("imagenes/enemigo/up4.png"), dimensiones),
-                 pygame.transform.scale(pygame.image.load("imagenes/enemigo/up5.png"), dimensiones)
+                 #pygame.transform.scale(pygame.image.load("imagenes/enemigo/up5.png"), dimensiones)
                  ],
             RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/right1.png"), dimensiones),
                     pygame.transform.scale(pygame.image.load("imagenes/enemigo/right2.png"), dimensiones),
@@ -298,7 +306,7 @@ class Enemigo(ObjetoJuego):
         }
 
         super(Enemigo, self).__init__(imagenes=imagenes, pos_x=pos_x, pos_y=pos_y, estado=0, animacion=0,
-                                      velocidad=2, cooldown_ataque=500)
+                                      velocidad=2, cooldown_ataque=500, vida_inicial=60)
         self.destino = (0, 0)
         self.golpeado = False
 
@@ -349,7 +357,7 @@ class Enemigo(ObjetoJuego):
         # rectangulo.bottom = self.posicion.top
         # rectangulo.centerx = self.posicion.centerx
         # pantalla.blit(texto, (rectangulo[0], rectangulo[1]))
-        pygame.draw.rect(pantalla, (255, 0, 0), (self.posicion[0], self.posicion[1] - 10, self.posicion[2], 5))
+        pygame.draw.rect(pantalla, (255, 0, 0), (self.posicion[0], self.posicion[1] - 10, self.vida_inicial, 5))
         pygame.draw.rect(pantalla, (0, 255, 0), (self.posicion[0], self.posicion[1] - 10, self.vida, 5))
 
     def golpe_enemigo(self, objeto_golpeado=None):
@@ -371,6 +379,21 @@ pygame.display.set_icon(icono)
 fondo = pygame.transform.scale(pygame.image.load("imagenes/fondo.png"), (ANCHO, ALTO)).convert()
 fuente = pygame.font.SysFont('Bauhaus 93', 25, False)
 
+def pausa():
+
+    pausado = True
+
+
+    while pausado:
+        for evento in pygame.event.get():
+            if evento.type == pygame.KEYDOWN and evento.key == pygame.K_q:
+                pausado = False
+            if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
+                pausado = False
+
+
+    pygame.display.update()
+    reloj.tick(15)
 
 def funcion():
     pantalla.blit(fondo, (0, 0))
@@ -383,7 +406,8 @@ def funcion():
         'd_bandera': False,
         's_bandera': False,
         'a_bandera': False,
-        'space_bandera': False
+        'space_bandera': False,
+        'f_bandera': False
     }
 
     score = 0
@@ -420,6 +444,21 @@ def funcion():
                 banderas['space_bandera'] = True
             if evento.type == pygame.KEYUP and evento.key == pygame.K_SPACE:
                 banderas['space_bandera'] = False
+            if evento.type == pygame.KEYDOWN and evento.key == pygame.K_f:
+                banderas['f_bandera'] = True
+            if evento.type == pygame.KEYUP and evento.key == pygame.K_f:
+                banderas['f_bandera'] = False
+            if evento.type == pygame.KEYDOWN and evento.key == pygame.K_p:
+                banderas = {
+                    'w_bandera': False,
+                    'd_bandera': False,
+                    's_bandera': False,
+                    'a_bandera': False,
+                    'space_bandera': False,
+                    'f_bandera': False
+                }
+                pausa()
+
 
         pantalla.blit(fondo, (0, 0))
 
