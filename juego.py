@@ -228,7 +228,6 @@ class Jugador(ObjetoJuego):
             self.vida += 5
 
 
-
 class Disparo(ObjetoJuego):
     def __init__(self, pos_x, pos_y, estado, dimensiones_vertical=(10, 25), dimensiones_horizontal=(25, 10)):
         imagenes = {
@@ -379,21 +378,18 @@ pygame.display.set_icon(icono)
 fondo = pygame.transform.scale(pygame.image.load("imagenes/fondo.png"), (ANCHO, ALTO)).convert()
 fuente = pygame.font.SysFont('Bauhaus 93', 25, False)
 
+
 def pausa():
-
     pausado = True
-
-
     while pausado:
         for evento in pygame.event.get():
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_q:
                 pausado = False
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                 pausado = False
-
-
     pygame.display.update()
     reloj.tick(15)
+
 
 def funcion():
     pantalla.blit(fondo, (0, 0))
@@ -458,7 +454,6 @@ def funcion():
                     'f_bandera': False
                 }
                 pausa()
-
 
         pantalla.blit(fondo, (0, 0))
 
