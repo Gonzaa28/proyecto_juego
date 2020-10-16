@@ -380,14 +380,21 @@ fuente = pygame.font.SysFont('Bauhaus 93', 25, False)
 
 
 def pausa():
+
+    fuente = pygame.font.SysFont('Bauhaus 93', 35)
     pausado = True
+
     while pausado:
+        texto = fuente.render("Pausa", False, (0, 0, 0))
+        rectangulo = texto.get_rect()
+        pantalla.blit(texto, ((ANCHO/2-rectangulo[2]+25), (ALTO/2-rectangulo[3])))
         for evento in pygame.event.get():
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_q:
                 pausado = False
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                 pausado = False
-    pygame.display.update()
+        pygame.display.update()
+
     reloj.tick(15)
 
 
