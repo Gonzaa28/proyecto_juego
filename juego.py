@@ -95,9 +95,9 @@ class ObjetoJuego:
         self.caminando = True
         self.ultimo_estado = LEFT
 
-    def recorrer_imagenes(self):
+    def recorrer_imagenes(self, duracion = 75):
         if self.caminando or self.golpeando:
-            if self.ultimo_dibujo_tiempo + 75 <= pygame.time.get_ticks():
+            if self.ultimo_dibujo_tiempo + duracion <= pygame.time.get_ticks():
                 self.ultimo_dibujo_tiempo = pygame.time.get_ticks()
                 cant_animaciones = len(self.imagenes[self.estado]) - 1
                 if self.animacion > cant_animaciones:
@@ -238,6 +238,8 @@ class Jugador(ObjetoJuego):
                     self.lista_disparos_bomba.remove(disparo)
                 disparo.movimiento()
                 disparo.dibujar(pantalla)
+                if disparo.explotado and disparo.tiempo_detonacion + disparo.duracion_explosion <= pygame.time.get_ticks():
+                    self.lista_disparos_bomba.remove(disparo)
             except:
                 pass
         super(Jugador, self).dibujar(pantalla)
@@ -297,27 +299,39 @@ class Disparo(ObjetoJuego):
 
 class DisparoBomba(Disparo):
     def __init__(self, pos_x, pos_y, estado, dimensiones_vertical=(10, 25), dimensiones_horizontal=(25, 10)):
+        dimensiones_explosion = (120, 120)
         imagenes = {
             UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/arrowup.png"), dimensiones_vertical)],
             RIGHT: [
                 pygame.transform.scale(pygame.image.load("imagenes/jugador/arrowright.png"), dimensiones_horizontal)],
             DOWN: [pygame.transform.scale(pygame.image.load("imagenes/jugador/arrowdown.png"), dimensiones_vertical)],
             LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/arrowleft.png"), dimensiones_horizontal)],
-            BOOM: [pygame.transform.scale(pygame.image.load("imagenes/jugador/explosion.png"), (100, 100))]
+            BOOM: [
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/boom_1.png"), dimensiones_explosion),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/boom_2.png"), dimensiones_explosion),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/boom_3.png"), dimensiones_explosion),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/boom_4.png"), dimensiones_explosion),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/boom_5.png"), dimensiones_explosion),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/boom_6.png"), dimensiones_explosion),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/boom_7.png"), dimensiones_explosion)
+            ]
         }
         super(DisparoBomba, self).__init__(imagenes=imagenes, pos_x=pos_x, pos_y=pos_y, estado=estado, velocidad=15)
 
         self.explotado = False
-        self.tiempo_explosion = 3000
+        self.duracion_explosion = 1500
+        self.tiempo_detonacion = 0
 
     def dibujar(self, pantalla):
         if self.explotado:
             pantalla.blit(self.imagenes[self.estado][self.animacion], self.posicion)
+            self.recorrer_imagenes(int(self.duracion_explosion/len(self.imagenes[self.estado])))
         else:
             super(DisparoBomba, self).dibujar(pantalla)
 
     def detonar(self):
         self.explotado = True
+        self.tiempo_detonacion = pygame.time.get_ticks()
         self.estado = BOOM
         self.animacion = 0
         px, py = self.posicion.centerx, self.posicion.centery
@@ -439,6 +453,7 @@ class Enemigo(ObjetoJuego):
         if self.cooldown_ataque + self.tiempo_ataque <= pygame.time.get_ticks():
             self.tiempo_ataque = pygame.time.get_ticks()
             self.golpear(objeto_golpeado)
+
 
 class Nivel:
     pass
@@ -598,13 +613,15 @@ def funcion():
                     jugador.coins += 2
 
             for x in enemigo.detectar_colision(reversed(jugador.lista_disparos_bomba)):
-                #jugador.lista_disparos_bomba.remove(x)
-                x.detonar()
-                jugador.golpear(enemigo)
-                if enemigo.vida <= 0:
-                    lista_enemigos.remove(enemigo)
-                    score += 5
-                    jugador.coins += 2
+                if not x.explotado:
+                    x.detonar()
+                    for enemigo_explosion in x.detectar_colision(reversed(lista_enemigos)):
+                        jugador.golpear(enemigo_explosion)
+                        if enemigo_explosion.vida <= 0:
+                            if enemigo_explosion in lista_enemigos:
+                                lista_enemigos.remove(enemigo_explosion)
+                                score += 5
+                                jugador.coins += 2
 
         pygame.display.update()
 
