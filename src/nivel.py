@@ -9,7 +9,8 @@ from src.spawn_point import SpawnPoint
 
 
 class Nivel:
-    def __init__(self, imagen_fondo, jugador, numero, cantidad_enemigos=3, respawn=10000, spawn_point_quantity=1, items=None):
+    def __init__(self, imagen_fondo, jugador, numero, cantidad_enemigos=3, respawn=10000, spawn_point_quantity=1, items=None,
+                 velocidad_enemigos=2.0, vida_enemigos=60, danio_enemigos=1, cantidad_enemigos_spawn=1):
         self.numero = numero
         self.fondo = pygame.transform.scale(pygame.image.load(imagen_fondo), (ANCHO, ALTO)).convert()
         self.jugador = jugador
@@ -17,8 +18,24 @@ class Nivel:
         self.items = items or []
         self.moneda = Moneda(ANCHO / 2, 0)
         self.respawn = respawn
+        self.spawn_point_quantity = spawn_point_quantity
         self.ultimo_enemigo = pygame.time.get_ticks()
-        self.spawn_points = [SpawnPoint(*posicion_aleatoria_mapa(), ) for _ in range(spawn_point_quantity)]
+        self.velocidad_enemigos = velocidad_enemigos
+        self.vida_enemigos = vida_enemigos
+        self.danio_enemigos = danio_enemigos
+        self.cantidad_enemigos_spawn = cantidad_enemigos_spawn
+        self.spawn_points = [
+            SpawnPoint(
+                *posicion_aleatoria_mapa(),
+                base_enemy_damage=self.danio_enemigos,
+                base_enemy_health=self.vida_enemigos,
+                base_enemy_speed=self.velocidad_enemigos,
+                spawn_time=self.respawn,
+                enemigo=Enemigo,
+                spawn_amount=self.cantidad_enemigos_spawn
+            )
+            for _ in range(spawn_point_quantity)
+        ]
 
     def bucle_principal(self, pantalla, fuente, banderas):
         pantalla.blit(self.fondo, (0, 0))
@@ -156,3 +173,29 @@ class Nivel:
         self.ultimo_enemigo = pygame.time.get_ticks()
         for spawn_point in self.spawn_points:
             spawn_point.spawn_enemy(self.enemigos)
+
+    def generar_proximo_nivel(self):
+        # TODO meter aleatoriedad, sino esto se vuelve imposible rapido
+        proximo_numero = self.numero + 1
+        fondo = self.traer_fondo_nivel(proximo_numero)
+        cantidad_enemigos_iniciales = randint(1, 5)
+        cantidad_puntos_aparicion = self.spawn_point_quantity + 1
+        tiempo_respawn = self.respawn - 1
+        cantidad_enemigos_spawn = self.cantidad_enemigos_spawn + 1
+        vida_enemigos = self.vida_enemigos + 10
+        danio_enemigos = self.danio_enemigos + 1
+        velocidad_enemigos = self.velocidad_enemigos + 0.5
+
+        return Nivel(
+            jugador=self.jugador,
+            respawn=tiempo_respawn,
+            numero=proximo_numero,
+            spawn_point_quantity=cantidad_puntos_aparicion,
+            cantidad_enemigos=cantidad_enemigos_iniciales,
+            imagen_fondo=fondo,
+            items=self.items,
+            cantidad_enemigos_spawn=cantidad_enemigos_spawn,
+            vida_enemigos=vida_enemigos,
+            danio_enemigos=danio_enemigos,
+            velocidad_enemigos=velocidad_enemigos
+        )
