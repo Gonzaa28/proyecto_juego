@@ -1,5 +1,4 @@
 import pygame
-
 from src.disparo import Disparo
 from src.configuracion import *
 
@@ -9,8 +8,7 @@ class DisparoBomba(Disparo):
         dimensiones_explosion = (120, 120)
         imagenes = {
             UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/arribaFlechaRoja.png"), dimensiones_vertical)],
-            RIGHT: [
-                pygame.transform.scale(pygame.image.load("imagenes/jugador/derechaFlechaRoja.png"), dimensiones_horizontal)],
+            RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/derechaFlechaRoja.png"), dimensiones_horizontal)],
             DOWN: [pygame.transform.scale(pygame.image.load("imagenes/jugador/abajoFlechaRoja.png"), dimensiones_vertical)],
             LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/izquierdaFlechaRoja.png"), dimensiones_horizontal)],
             BOOM: [
@@ -24,7 +22,6 @@ class DisparoBomba(Disparo):
             ]
         }
         super(DisparoBomba, self).__init__(imagenes=imagenes, pos_x=pos_x, pos_y=pos_y, estado=estado, velocidad=15)
-
         self.explotado = False
         self.duracion_explosion = 1500
         self.tiempo_detonacion = 0

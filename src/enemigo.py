@@ -6,31 +6,36 @@ from src.funciones import posicion_aleatoria_radio
 from src.moneda import *
 from src.corazon import *
 
+
 class Enemigo(ObjetoJuego):
     def __init__(self, pos_x=int(ANCHO / 2), pos_y=0, dimensiones=(45, 45)):
         imagenes = {
-            UP: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/up1.png"), dimensiones),
-                 pygame.transform.scale(pygame.image.load("imagenes/enemigo/up2.png"), dimensiones),
-                 pygame.transform.scale(pygame.image.load("imagenes/enemigo/up3.png"), dimensiones),
-                 # pygame.transform.scale(pygame.image.load("imagenes/enemigo/up4.png"), dimensiones),
-                 # pygame.transform.scale(pygame.image.load("imagenes/enemigo/up5.png"), dimensiones)
-                 ],
-            RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/right1.png"), dimensiones),
-                    pygame.transform.scale(pygame.image.load("imagenes/enemigo/right2.png"), dimensiones),
-                    pygame.transform.scale(pygame.image.load("imagenes/enemigo/right3.png"), dimensiones),
-                    # pygame.transform.scale(pygame.image.load("imagenes/enemigo/right4.png"), dimensiones)
-                    ],
-            DOWN: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/down1.png"), dimensiones),
-                   pygame.transform.scale(pygame.image.load("imagenes/enemigo/down2.png"), dimensiones),
-                   pygame.transform.scale(pygame.image.load("imagenes/enemigo/down3.png"), dimensiones),
-                   # pygame.transform.scale(pygame.image.load("imagenes/enemigo/down4.png"), dimensiones),
-                   # pygame.transform.scale(pygame.image.load("imagenes/enemigo/down5.png"), dimensiones)
-                   ],
-            LEFT: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/left1.png"), dimensiones),
-                   pygame.transform.scale(pygame.image.load("imagenes/enemigo/left2.png"), dimensiones),
-                   pygame.transform.scale(pygame.image.load("imagenes/enemigo/left3.png"), dimensiones),
-                   # pygame.transform.scale(pygame.image.load("imagenes/enemigo/left4.png"), dimensiones)
-                   ],
+            UP: [
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/up1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/up2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/up3.png"), dimensiones),
+                # pygame.transform.scale(pygame.image.load("imagenes/enemigo/up4.png"), dimensiones),
+                # pygame.transform.scale(pygame.image.load("imagenes/enemigo/up5.png"), dimensiones)
+            ],
+            RIGHT: [
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/right1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/right2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/right3.png"), dimensiones),
+                # pygame.transform.scale(pygame.image.load("imagenes/enemigo/right4.png"), dimensiones)
+            ],
+            DOWN: [
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/down1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/down2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/down3.png"), dimensiones),
+                # pygame.transform.scale(pygame.image.load("imagenes/enemigo/down4.png"), dimensiones),
+                # pygame.transform.scale(pygame.image.load("imagenes/enemigo/down5.png"), dimensiones)
+            ],
+            LEFT: [
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/left1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/left2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/enemigo/left3.png"), dimensiones),
+                # pygame.transform.scale(pygame.image.load("imagenes/enemigo/left4.png"), dimensiones)
+            ],
             PUNCH_RIGHT: [
                 pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchright1.png"), dimensiones),
                 pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchright2.png"), dimensiones),
@@ -56,7 +61,6 @@ class Enemigo(ObjetoJuego):
                 pygame.transform.scale(pygame.image.load("imagenes/enemigo/punchleft4.png"), dimensiones)
             ],
         }
-
         super(Enemigo, self).__init__(imagenes=imagenes, pos_x=pos_x, pos_y=pos_y, estado=0, animacion=0,
                                       velocidad=2, cooldown_ataque=500, vida_inicial=60)
         self.golpeado = False

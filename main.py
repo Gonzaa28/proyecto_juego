@@ -4,7 +4,15 @@ from src import *
 from src.nivel import Nivel
 
 
-def pausa():
+def pausa(banderas):
+    banderas['w_bandera'] = False
+    banderas['d_bandera'] = False
+    banderas['s_bandera'] = False
+    banderas['a_bandera'] = False
+    banderas['space_bandera'] = False
+    banderas['f_bandera'] = False
+    banderas['r_bandera'] = False
+    banderas['v_bandera'] = False
 
     fuente = pygame.font.SysFont('Bauhaus 93', 35)
     pausado = True
@@ -12,7 +20,7 @@ def pausa():
     while pausado:
         texto = fuente.render("Pause", False, (0, 0, 0))
         rectangulo = texto.get_rect()
-        pantalla.blit(texto, ((ANCHO/2-rectangulo[2]+40), (ALTO/2-rectangulo[3])))
+        pantalla.blit(texto, (int(ANCHO/2-rectangulo[2]+40), int(ALTO/2-rectangulo[3])))
         for evento in pygame.event.get():
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_q:
                 pausado = False
@@ -20,11 +28,10 @@ def pausa():
                 pausado = False
         pygame.display.update()
 
-    reloj.tick(15)
+    # reloj.tick(15)
 
 
 def main_supervivencia(pantalla):
-
     banderas = {
         'w_bandera': False,
         'd_bandera': False,
@@ -35,8 +42,10 @@ def main_supervivencia(pantalla):
         'r_bandera': False,
         'v_bandera': False
         }
+
     jugador = Jugador()
-    nivel_1 = Nivel(Nivel.traer_fondo_nivel(1), jugador, 1) # @staticmethod es una funcion que podemos llamar desde la clase pero no tiene acceso a ningun atributro de la clase)
+    nivel = Nivel(Nivel.traer_fondo_nivel(1), jugador, 1) # @staticmethod es una funcion que podemos llamar desde la clase pero no tiene acceso a ningun atributro de la clase)
+
     corriendo = True
 
     while corriendo:
@@ -81,24 +90,16 @@ def main_supervivencia(pantalla):
                 banderas['v_bandera'] = False
 
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_p:
-                banderas = {
-                    'w_bandera': False,
-                    'd_bandera': False,
-                    's_bandera': False,
-                    'a_bandera': False,
-                    'space_bandera': False,
-                    'f_bandera': False,
-                    'r_bandera': False,
-                    'v_bandera': False
-                }
-                pausa()
+                pausa(banderas)
 
-        if not nivel_1.nivel_ganado() and not nivel_1.nivel_perdido():
-            nivel_1.bucle_principal(pantalla, fuente, banderas)
-        elif nivel_1.nivel_ganado():
+        if not nivel.nivel_ganado() and not nivel.nivel_perdido():
+            nivel.bucle_principal(pantalla, fuente, banderas)
+        elif nivel.nivel_ganado():
             jugador.vaciar_ataques()
-            nivel_1 = Nivel(nivel_1.traer_fondo_nivel(nivel_1.numero+1), jugador, nivel_1.numero+1)
+            nivel = Nivel(nivel.traer_fondo_nivel(nivel.numero+1), jugador, nivel.numero+1)
         # TODO AGREGAR LOGICA CUANDO PIERDA
+        elif nivel.nivel_perdido():
+            corriendo = False
 
         pygame.display.update()
 
@@ -148,12 +149,8 @@ if __name__ == '__main__':
 
     menu = pygame_menu.Menu(600, 800, 'Juego', theme=tema)
 
-    menu.add_text_input('Name: ')
-    menu.add_selector('Difficulty: ', [('Hard', 1), ('Medium', 2), ('Easy', 3)])
+    menu.add_text_input('Nombre: ')
+    menu.add_selector('Dificultad: ', [('Dificil', 1), ('Medio', 2), ('Facil', 3)])
     menu.add_button('Modo supervivencia', main_supervivencia, pantalla)
-    menu.add_button('Exit', pygame_menu.events.EXIT)
+    menu.add_button('Salir', pygame_menu.events.EXIT)
     menu.mainloop(pantalla)
-
-
-
-

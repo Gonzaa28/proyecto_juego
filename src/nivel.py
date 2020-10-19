@@ -1,7 +1,5 @@
 from random import randint
-
 import pygame
-
 from src.funciones import posicion_aleatoria_mapa
 from src.enemigo import *
 from src.configuracion import *
@@ -9,7 +7,6 @@ from src.configuracion import *
 
 class Nivel:
     def __init__(self, imagen_fondo, jugador, numero, cantidad_enemigos=3, respawn=10000):
-
         self.numero = numero
         self.fondo = pygame.transform.scale(pygame.image.load(imagen_fondo), (ANCHO, ALTO)).convert()
         self.jugador = jugador

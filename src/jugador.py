@@ -9,33 +9,40 @@ from src.configuracion import *
 class Jugador(ObjetoJuego):
     def __init__(self, dimensiones=(50, 50)):
         imagenes = {
-            UP: [pygame.transform.scale(pygame.image.load("imagenes/jugador/up1.png"), dimensiones),
-                 pygame.transform.scale(pygame.image.load("imagenes/jugador/up2.png"), dimensiones),
-                 pygame.transform.scale(pygame.image.load("imagenes/jugador/up3.png"), dimensiones)
-                 ],
-            RIGHT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/right1.png"), dimensiones),
-                    pygame.transform.scale(pygame.image.load("imagenes/jugador/right2.png"), dimensiones),
-                    pygame.transform.scale(pygame.image.load("imagenes/jugador/right3.png"), dimensiones)
-                    ],
-            DOWN: [pygame.transform.scale(pygame.image.load("imagenes/jugador/down1.png"), dimensiones),
-                   pygame.transform.scale(pygame.image.load("imagenes/jugador/down2.png"), dimensiones),
-                   pygame.transform.scale(pygame.image.load("imagenes/jugador/down3.png"), dimensiones)
-                   ],
-            LEFT: [pygame.transform.scale(pygame.image.load("imagenes/jugador/left1.png"), dimensiones),
-                   pygame.transform.scale(pygame.image.load("imagenes/jugador/left2.png"), dimensiones),
-                   pygame.transform.scale(pygame.image.load("imagenes/jugador/left3.png"), dimensiones)
-                   ],
-            PUNCH_UP: [  # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup1.png"), dimensiones),
+            UP: [
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/up1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/up2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/up3.png"), dimensiones)
+            ],
+            RIGHT: [
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/right1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/right2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/right3.png"), dimensiones)
+            ],
+            DOWN: [
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/down1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/down2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/down3.png"), dimensiones)
+            ],
+            LEFT: [
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/left1.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/left2.png"), dimensiones),
+                pygame.transform.scale(pygame.image.load("imagenes/jugador/left3.png"), dimensiones)
+            ],
+            PUNCH_UP: [
+                # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup1.png"), dimensiones),
                 pygame.transform.scale(pygame.image.load("imagenes/jugador/punchup2.png"), dimensiones)
             ],
             PUNCH_RIGHT: [
                 # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright1.png"), dimensiones),
                 pygame.transform.scale(pygame.image.load("imagenes/jugador/punchright2.png"), dimensiones)
             ],
-            PUNCH_DOWN: [  # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown1.png"), dimensiones),
+            PUNCH_DOWN: [
+                # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown1.png"), dimensiones),
                 pygame.transform.scale(pygame.image.load("imagenes/jugador/punchdown2.png"), dimensiones)
             ],
-            PUNCH_LEFT: [  # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft1.png"), dimensiones),
+            PUNCH_LEFT: [
+                # pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft1.png"), dimensiones),
                 pygame.transform.scale(pygame.image.load("imagenes/jugador/punchleft2.png"), dimensiones)
             ]
         }
@@ -125,7 +132,6 @@ class Jugador(ObjetoJuego):
             self.lista_disparos.append(Disparo(self.posicion.centerx, self.posicion.centery, self.ultimo_estado, infinito=infinito)) # TODO VALIDACION SI PODES USAR UN DISPARO INFINITO
             self.golpear()
 
-
     def curarse(self, val_curacion):
         if self.vida <= self.vida_inicial:
             self.vida = self.vida + val_curacion if self.vida + val_curacion <= self.vida_inicial else self.vida_inicial
@@ -157,3 +163,4 @@ class Jugador(ObjetoJuego):
     def vaciar_ataques(self):
         self.lista_disparos = []
         self.lista_disparos_bomba = []
+        self.lista_disparos_stun = []

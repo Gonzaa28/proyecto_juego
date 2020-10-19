@@ -23,7 +23,6 @@ class ObjetoJuego:
         self.cooldown_ataque = cooldown_ataque
         self.tiempo_ataque = pygame.time.get_ticks()
 
-
     def dibujar(self, pantalla):
         try:
             pantalla.blit(self.imagenes[self.estado][self.animacion], self.posicion)
@@ -74,7 +73,7 @@ class ObjetoJuego:
         self.caminando = True
         self.ultimo_estado = LEFT
 
-    def recorrer_imagenes(self, duracion = 75):
+    def recorrer_imagenes(self, duracion=75):
         if self.caminando or self.golpeando:
             if self.ultimo_dibujo_tiempo + duracion <= pygame.time.get_ticks():
                 self.ultimo_dibujo_tiempo = pygame.time.get_ticks()

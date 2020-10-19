@@ -1,5 +1,4 @@
 import pygame
-
 from src.item import Item
 from src.configuracion import *
 
