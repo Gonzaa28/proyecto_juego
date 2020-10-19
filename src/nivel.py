@@ -64,12 +64,23 @@ class Nivel:
                     enemigo.morir(self.items)
 
             for x in enemigo.detectar_colision(reversed(self.jugador.lista_disparos_stun)):
-                self.jugador.lista_disparos_stun.remove(x)
-                self.jugador.golpear(enemigo, x.poder_ataque)
-                enemigo.congelar(x.duracion_congelacion)
-                if enemigo.vida <= 0:
-                    self.enemigos.remove(enemigo)
-                    enemigo.morir(self.items)
+                if not x.congelado:
+                    x.congelar()
+                    enemigo.congelar(x.duracion_congelacion)
+                    for enemigo_congelacion in x.detectar_colision(reversed(self.enemigos)):
+                        enemigo_congelacion.congelar(x.duracion_congelacion)
+                        self.jugador.golpear(enemigo_congelacion, x.poder_ataque)
+                        if enemigo_congelacion.vida <= 0:
+                            if enemigo_congelacion in self.enemigos:
+                                self.enemigos.remove(enemigo_congelacion)
+                                enemigo.morir(self.items)
+
+                # self.jugador.lista_disparos_stun.remove(x)
+                # self.jugador.golpear(enemigo, x.poder_ataque)
+                # enemigo.congelar(x.duracion_congelacion)
+                # if enemigo.vida <= 0:
+                #     self.enemigos.remove(enemigo)
+                #     enemigo.morir(self.items)
 
             for x in enemigo.detectar_colision(reversed(self.jugador.lista_disparos_bomba)):
                 if not x.explotado:

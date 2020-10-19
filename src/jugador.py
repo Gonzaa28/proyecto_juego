@@ -117,8 +117,8 @@ class Jugador(ObjetoJuego):
                     self.lista_disparos_stun.remove(disparo)
                 disparo.movimiento()
                 disparo.dibujar(pantalla)
-                # if disparo.explotado and disparo.tiempo_detonacion + disparo.duracion_explosion <= pygame.time.get_ticks():
-                    #self.lista_disparos_stun.remove(disparo) MODIFAR PARA ANIMACION
+                if disparo.congelado and disparo.tiempo_congelacion + disparo.duracion_congelacion <= pygame.time.get_ticks():
+                    self.lista_disparos_stun.remove(disparo)  # TODO MODIFAR PARA ANIMACION
             except:
                 pass
 
@@ -129,7 +129,8 @@ class Jugador(ObjetoJuego):
     def disparar(self, infinito=False):
         if self.cooldown_ataque + self.tiempo_ataque <= pygame.time.get_ticks():
             self.tiempo_ataque = pygame.time.get_ticks()
-            self.lista_disparos.append(Disparo(self.posicion.centerx, self.posicion.centery, self.ultimo_estado, infinito=infinito)) # TODO VALIDACION SI PODES USAR UN DISPARO INFINITO
+            self.lista_disparos.append(Disparo(self.posicion.centerx, self.posicion.centery, self.ultimo_estado,
+                                               infinito=infinito))  # TODO VALIDACION SI PODES USAR UN DISPARO INFINITO
             self.golpear()
 
     def curarse(self, val_curacion):
@@ -141,13 +142,15 @@ class Jugador(ObjetoJuego):
     def disparar_bomba(self):
         if self.cooldown_ataque + self.tiempo_ataque <= pygame.time.get_ticks():
             self.tiempo_ataque = pygame.time.get_ticks()
-            self.lista_disparos_bomba.append(DisparoBomba(self.posicion.centerx, self.posicion.centery, self.ultimo_estado))
+            self.lista_disparos_bomba.append(
+                DisparoBomba(self.posicion.centerx, self.posicion.centery, self.ultimo_estado))
             self.golpear()
 
     def disparar_congeladores(self):
         if self.cooldown_ataque + self.tiempo_ataque <= pygame.time.get_ticks():
             self.tiempo_ataque = pygame.time.get_ticks()
-            self.lista_disparos_stun.append(DisparoCongelante(self.posicion.centerx, self.posicion.centery, self.ultimo_estado))
+            self.lista_disparos_stun.append(
+                DisparoCongelante(self.posicion.centerx, self.posicion.centery, self.ultimo_estado))
             self.golpear()
 
     def add_coins(self, cantidad):

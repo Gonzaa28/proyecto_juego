@@ -110,10 +110,10 @@ class Enemigo(ObjetoJuego):
             self.golpear(objeto_golpeado)
 
     def morir(self, lista_item):
-        x = randint(0, 6)
-        if x == 1:
+        x = randint(0, 7)
+        if 0 <= x <= 2:
             lista_item.append(Corazon(self.posicion[0], self.posicion[1]))
-        if 2 <= x <= 4:
+        if 3 <= x <= 5:
             lista_item.extend([Moneda(*posicion_aleatoria_radio(self.posicion[0], self.posicion[1], 30)) for _ in range(randint(1, 6))])
 
     def congelar(self, duracion):
