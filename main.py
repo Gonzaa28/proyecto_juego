@@ -40,7 +40,6 @@ def main_supervivencia(pantalla):
     corriendo = True
 
     while corriendo:
-
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 corriendo = False
@@ -97,7 +96,7 @@ def main_supervivencia(pantalla):
             nivel_1.bucle_principal(pantalla, fuente, banderas)
         elif nivel_1.nivel_ganado():
             jugador.vaciar_ataques()
-            nivel_1 = Nivel(nivel_1.traer_fondo_nivel(nivel_1.numero+1), jugador, nivel_1.numero+1)
+            nivel_1 = Nivel(nivel_1.traer_fondo_nivel(nivel_1.numero+1), jugador, nivel_1.numero+1, items=nivel_1.items)
         # TODO AGREGAR LOGICA CUANDO PIERDA
 
         pygame.display.update()

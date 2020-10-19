@@ -6,8 +6,9 @@ from src.funciones import posicion_aleatoria_radio
 from src.moneda import *
 from src.corazon import *
 
+
 class Enemigo(ObjetoJuego):
-    def __init__(self, pos_x=int(ANCHO / 2), pos_y=0, dimensiones=(45, 45)):
+    def __init__(self, pos_x=int(ANCHO / 2), pos_y=0, dimensiones=(45, 45), danio=1, vida_inicial=60, velocidad=2):
         imagenes = {
             UP: [pygame.transform.scale(pygame.image.load("imagenes/enemigo/up1.png"), dimensiones),
                  pygame.transform.scale(pygame.image.load("imagenes/enemigo/up2.png"), dimensiones),
@@ -58,7 +59,7 @@ class Enemigo(ObjetoJuego):
         }
 
         super(Enemigo, self).__init__(imagenes=imagenes, pos_x=pos_x, pos_y=pos_y, estado=0, animacion=0,
-                                      velocidad=2, cooldown_ataque=500, vida_inicial=60)
+                                      velocidad=velocidad, cooldown_ataque=500, vida_inicial=vida_inicial, poder_ataque=danio)
         self.golpeado = False
         self.ultima_congelacion = pygame.time.get_ticks()
         self.duracion_congelacion = 1000
