@@ -4,7 +4,74 @@ from src import *
 from src.nivel import Nivel
 
 
-def pausa(banderas):
+class ItemShop:
+    def __init__(self, imagen_item, alto, center_x, top_y, texto, precio, tipo_item, mejora):
+        self.imagen_item = pygame.transform.scale(pygame.image.load(imagen_item), (60, alto))
+        self.posicion = self.imagen_item.get_rect()
+        self.posicion.centerx = center_x
+        self.posicion.top = top_y
+
+        self.fuente = pygame.font.SysFont('Bauhaus 93', 35)
+
+        self.texto = fuente.render(texto, False, (0, 0, 0))
+        self.texto_posicion = self.texto.get_rect()
+
+        self.precio = fuente.render(str(precio), False, (0, 0, 0))
+        self.precio_valor = precio
+        self.precio_posicion = self.precio.get_rect()
+
+        self.tipo_item = tipo_item
+        self.mejora = mejora
+
+        self.imagen_comprar = pygame.transform.scale(pygame.image.load('imagenes/grave.png'), (60, alto))
+        self.posicion_imagen_comprar = self.imagen_comprar.get_rect()
+
+        self.alinear_imagenes()
+
+        self.rectangulo_x = self.posicion.left
+        self.rectangulo_y = self.posicion.top
+        self.rectangulo_ancho = self.posicion_imagen_comprar.right - self.posicion.left
+        self.rectangulo_alto = self.posicion[3]
+
+        self.rectangulo = pygame.Rect(self.rectangulo_x, self.rectangulo_y, self.rectangulo_ancho, self.rectangulo_alto)
+
+        self.centrar_en_pantalla()
+
+    def dibujar(self, pantalla):
+        pygame.draw.rect(pantalla, (0, 0, 0), (self.rectangulo.left - 5, self.rectangulo.top - 5,
+                                               self.rectangulo.width + 10, self.rectangulo.height + 10))
+        pygame.draw.rect(pantalla, (255, 255, 255), self.rectangulo)
+        pantalla.blit(self.imagen_item, self.posicion)
+        pantalla.blit(self.texto, self.texto_posicion)
+        pantalla.blit(self.precio, self.precio_posicion)
+        pantalla.blit(self.imagen_comprar, self.posicion_imagen_comprar)
+
+    def centrar_en_pantalla(self):
+        self.rectangulo.centerx = int(ANCHO/2)
+        self.posicion.left = self.rectangulo.left
+        self.alinear_imagenes()
+
+    def alinear_imagenes(self):
+        self.texto_posicion.left = self.posicion.right
+        self.texto_posicion.centery = self.posicion.centery
+        self.precio_posicion.centery = self.posicion.centery
+        self.precio_posicion.left = self.texto_posicion.right + 50
+        self.posicion_imagen_comprar.centery = self.posicion.centery
+        self.posicion_imagen_comprar.left = self.precio_posicion.right
+
+    def comprar(self, jugador):
+        if jugador.coins - self.precio_valor >= 0:
+            jugador.coins -= self.precio_valor
+            if self.tipo_item == ITEM_PODER_ATAQUE:
+                jugador.poder_ataque += self.mejora
+            if self.tipo_item == ITEM_VELOCIDAD:
+                jugador.velocidad += self.mejora
+            if self.tipo_item == ITEM_VIDA:
+                jugador.vida_inicial += self.mejora
+                jugador.vida = jugador.vida_inicial
+
+
+def pausa(banderas, jugador, nivel, fuente):
     banderas['w_bandera'] = False
     banderas['d_bandera'] = False
     banderas['s_bandera'] = False
@@ -14,24 +81,45 @@ def pausa(banderas):
     banderas['r_bandera'] = False
     banderas['v_bandera'] = False
 
-    fuente = pygame.font.SysFont('Bauhaus 93', 35)
     pausado = True
 
+    lista_items = [ItemShop('imagenes/grave.png', 60, int(ANCHO/2), 100, 'Poder ataque', 10, ITEM_PODER_ATAQUE, 5)]
+    lista_items.append(ItemShop('imagenes/grave.png', 60, int(ANCHO/2), lista_items[-1].rectangulo.bottom, 'Velocidad',
+                                10, ITEM_VELOCIDAD, 5))
+    lista_items.append(ItemShop('imagenes/grave.png', 60, int(ANCHO / 2), lista_items[-1].rectangulo.bottom, 'Vida',
+                                10, ITEM_VIDA, 5))
+
     while pausado:
-        texto = fuente.render("Pause", False, (0, 0, 0))
+        pantalla.blit(nivel.fondo, (0, 0))
+        texto = fuente.render("Pausa/Tienda", False, (0, 0, 0))
         rectangulo = texto.get_rect()
-        pantalla.blit(texto, (int(ANCHO/2-rectangulo[2]+40), int(ALTO/2-rectangulo[3])))
+        pantalla.blit(texto, (0, 0))
         for evento in pygame.event.get():
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_q:
                 pausado = False
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                 pausado = False
+            if evento.type == pygame.MOUSEBUTTONDOWN:
+                for item in lista_items:
+                    if item.posicion_imagen_comprar.collidepoint(pygame.mouse.get_pos()):
+                        item.comprar(jugador)
+
+        for item in lista_items:
+            item.dibujar(pantalla)
+
+        nivel.moneda.dibujar(pantalla)
+        texto_coins = fuente.render(f'{jugador.coins}', False, (0, 0, 0))
+        pantalla.blit(texto_coins, (nivel.moneda.posicion.right, nivel.moneda.posicion.top))
+
         pygame.display.update()
 
-    # reloj.tick(15)
+    for s in nivel.spawn_points:
+        s.last_spawn_time = pygame.time.get_ticks()
+
+    nivel.ultimo_enemigo = pygame.time.get_ticks()
 
 
-def main_supervivencia(pantalla):
+def main_supervivencia(pantalla, fuente):
     banderas = {
         'w_bandera': False,
         'd_bandera': False,
@@ -89,14 +177,13 @@ def main_supervivencia(pantalla):
                 banderas['v_bandera'] = False
 
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_p:
-                pausa(banderas)
+                pausa(banderas, jugador, nivel, fuente)
 
         if not nivel.nivel_ganado() and not nivel.nivel_perdido():
             nivel.bucle_principal(pantalla, fuente, banderas)
         elif nivel.nivel_ganado():
             jugador.vaciar_ataques()
-            nivel_1 = nivel_1.generar_proximo_nivel()
-            # nivel_1 = Nivel(nivel_1.traer_fondo_nivel(nivel_1.numero+1), jugador, nivel_1.numero+1, items=nivel_1.items)
+            nivel = nivel.generar_proximo_nivel()
         # TODO AGREGAR LOGICA CUANDO PIERDA
         elif nivel.nivel_perdido():
             corriendo = False
@@ -117,7 +204,7 @@ if __name__ == '__main__':
     icono = pygame.transform.scale(pygame.image.load("imagenes/jugador/down1.png"), (80, 80))
     pygame.display.set_icon(icono)
     fondo = pygame.transform.scale(pygame.image.load("imagenes/fondo.png"), (ANCHO, ALTO)).convert() # SACAR
-    fuente = pygame.font.SysFont('Bauhaus 93', 25, False)
+    fuente = pygame.font.SysFont('Bauhaus 93', 30, False)
 
     imagen = pygame_menu.baseimage.BaseImage(
         image_path='imagenes/fondo.png',
@@ -151,6 +238,6 @@ if __name__ == '__main__':
 
     menu.add_text_input('Nombre: ')
     menu.add_selector('Dificultad: ', [('Dificil', 1), ('Medio', 2), ('Facil', 3)])
-    menu.add_button('Modo supervivencia', main_supervivencia, pantalla)
+    menu.add_button('Modo supervivencia', main_supervivencia, pantalla, fuente)
     menu.add_button('Salir', pygame_menu.events.EXIT)
     menu.mainloop(pantalla)

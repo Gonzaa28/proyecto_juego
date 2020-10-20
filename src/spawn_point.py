@@ -5,11 +5,13 @@ from src.objeto_juego import ObjetoJuego, QUIETO
 
 
 class SpawnPoint(ObjetoJuego):
-    def __init__(self, pos_x, pos_y, vida_inicial=50, spawn_time=8000, enemigo=Enemigo, base_enemy_health=50, base_enemy_damage=1, spawn_amount=1, base_enemy_speed=1):
+    def __init__(self, pos_x, pos_y, vida_inicial=50, spawn_time=8000, enemigo=Enemigo, base_enemy_health=50,
+                 base_enemy_damage=1, spawn_amount=1, base_enemy_speed=1):
         imagenes = {
             QUIETO: [pygame.transform.scale(pygame.image.load("imagenes/grave.png"), (30, 60))]
         }
-        super(SpawnPoint, self).__init__(pos_x=pos_x, pos_y=pos_y, imagenes=imagenes, estado=QUIETO, animacion=0, velocidad=0, vida_inicial=vida_inicial)
+        super(SpawnPoint, self).__init__(pos_x=pos_x, pos_y=pos_y, imagenes=imagenes, estado=QUIETO, animacion=0,
+                                         velocidad=0, vida_inicial=vida_inicial)
         self.spawn_time = spawn_time
         self.enemy = enemigo
         self.last_spawn_time = pygame.time.get_ticks()

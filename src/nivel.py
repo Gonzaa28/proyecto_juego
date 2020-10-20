@@ -64,11 +64,18 @@ class Nivel:
                     # TODO Agregar drop
 
             for x in spawn_point.detectar_colision(reversed(self.jugador.lista_disparos_stun)):
-                self.jugador.lista_disparos_stun.remove(x)
-                self.jugador.golpear(spawn_point, x.poder_ataque)
-                if spawn_point.vida <= 0:
-                    self.spawn_points.remove(spawn_point)
+                if not x.congelado:
+                    x.congelar()
+                # self.jugador.lista_disparos_stun.remove(x)
+                    self.jugador.golpear(spawn_point, x.poder_ataque)
+                    if spawn_point.vida <= 0:
+                        self.spawn_points.remove(spawn_point)
                     #TODO agregar drop
+                    for enemigo_congelacion in x.detectar_colision(reversed(self.enemigos)):
+                        enemigo_congelacion.congelar(x.duracion_congelacion)
+                        self.jugador.golpear(enemigo_congelacion, x.poder_ataque)
+                        if enemigo_congelacion.vida <= 0:
+                            self.enemigos.remove(enemigo_congelacion)
 
             for x in spawn_point.detectar_colision(reversed(self.jugador.lista_disparos_bomba)):
                 if not x.explotado:
@@ -107,7 +114,10 @@ class Nivel:
                 enemigo.no_golpear()
 
             for x in enemigo.detectar_colision(reversed(self.jugador.lista_disparos)):
-                self.jugador.lista_disparos.remove(x)
+                try:
+                    self.jugador.lista_disparos.remove(x)
+                except:
+                    pass
                 self.jugador.golpear(enemigo, x.poder_ataque)
                 if enemigo.vida <= 0:
                     self.enemigos.remove(enemigo)
@@ -182,7 +192,7 @@ class Nivel:
         fondo = self.traer_fondo_nivel(proximo_numero)
         cantidad_enemigos_iniciales = randint(1, 5)
         cantidad_puntos_aparicion = self.spawn_point_quantity + 1
-        tiempo_respawn = self.respawn - 1
+        tiempo_respawn = self.respawn - 1000
         cantidad_enemigos_spawn = self.cantidad_enemigos_spawn + 1
         vida_enemigos = self.vida_enemigos + 10
         danio_enemigos = self.danio_enemigos + 1
