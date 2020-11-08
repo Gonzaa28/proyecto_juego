@@ -236,7 +236,7 @@ if __name__ == '__main__':
                  widget_shadow_color=(75, 75, 75),
                  widget_shadow_offset=2)
 
-    menu = pygame_menu.Menu(600, 800, 'Juego', theme=tema)
+    menu = pygame_menu.Menu(600, 800, 'El chanchito de mierda', theme=tema)
     help_menu = pygame_menu.Menu(600, 800, 'Ayuda', theme=tema)
     AYUDA = "Presione W para correr hacia arriba" \
             "Presione D para correr hacia la derecha" \
@@ -245,8 +245,8 @@ if __name__ == '__main__':
     help_menu.add_label(AYUDA, max_char=-1, font_size=40, aling=pygame_menu.locals.ALIGN_RIGHT, font_color=(0, 0, 0))
     help_menu.add_button('Volver', pygame_menu.events.BACK)
     # menu.add_selector('Dificultad: ', [('Dificil', 1), ('Medio', 2), ('Facil', 3)])
-    menu.add_button('Jugar', main_supervivencia, pantalla, fuente)
     menu.add_text_input('Nombre: ')
+    menu.add_button('Jugar', main_supervivencia, pantalla, fuente)
     menu.add_button('Ayuda', help_menu)
     menu.add_button('Salir', pygame_menu.events.EXIT)
     menu.mainloop(pantalla)
