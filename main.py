@@ -47,7 +47,7 @@ class ItemShop:
         pantalla.blit(self.imagen_comprar, self.posicion_imagen_comprar)
 
     def centrar_en_pantalla(self):
-        self.rectangulo.centerx = int(ANCHO/2)
+        self.rectangulo.centerx = int(ANCHO / 2)
         self.posicion.left = self.rectangulo.left
         self.alinear_imagenes()
 
@@ -70,8 +70,6 @@ class ItemShop:
                 jugador.vida_inicial += self.mejora
                 jugador.vida = jugador.vida_inicial
 
-def ayuda():
-    pass
 
 def pausa(banderas, jugador, nivel, fuente):
     banderas['w_bandera'] = False
@@ -86,10 +84,12 @@ def pausa(banderas, jugador, nivel, fuente):
     fuente = pygame.font.SysFont('Bauhaus 93', 35)
     pausado = True
 
-    lista_items = [ItemShop('imagenes/sword.png', 60, int(ANCHO/2), 100, 'Poder ataque', 10, ITEM_PODER_ATAQUE, 5)]
-    lista_items.append(ItemShop('imagenes/wing.png', 60, int(ANCHO/2), lista_items[-1].rectangulo.bottom + 15, 'Velocidad      ',
-                                10, ITEM_VELOCIDAD, 5))
-    lista_items.append(ItemShop('imagenes/items/heart.png', 60, int(ANCHO / 2), lista_items[-1].rectangulo.bottom + 15, 'Vida               ',
+    lista_items = [ItemShop('imagenes/sword.png', 60, int(ANCHO / 2), 100, 'Poder ataque', 10, ITEM_PODER_ATAQUE, 5)]
+    lista_items.append(
+        ItemShop('imagenes/wing.png', 60, int(ANCHO / 2), lista_items[-1].rectangulo.bottom + 15, 'Velocidad      ',
+                 10, ITEM_VELOCIDAD, 5))
+    lista_items.append(ItemShop('imagenes/items/heart.png', 60, int(ANCHO / 2), lista_items[-1].rectangulo.bottom + 15,
+                                'Vida               ',
                                 10, ITEM_VIDA, 5))
 
     while pausado:
@@ -121,6 +121,7 @@ def pausa(banderas, jugador, nivel, fuente):
 
     nivel.ultimo_enemigo = pygame.time.get_ticks()
 
+
 def main_supervivencia(pantalla, fuente):
     banderas = {
         'w_bandera': False,
@@ -131,10 +132,11 @@ def main_supervivencia(pantalla, fuente):
         'f_bandera': False,
         'r_bandera': False,
         'v_bandera': False
-        }
+    }
 
     jugador = Jugador()
-    nivel = Nivel(Nivel.traer_fondo_nivel(1), jugador, 1) # @staticmethod es una funcion que podemos llamar desde la clase pero no tiene acceso a ningun atributro de la clase)
+    nivel = Nivel(Nivel.traer_fondo_nivel(1), jugador,
+                  1)  # @staticmethod es una funcion que podemos llamar desde la clase pero no tiene acceso a ningun atributro de la clase)
 
     corriendo = True
 
@@ -202,10 +204,10 @@ if __name__ == '__main__':
     reloj = pygame.time.Clock()
 
     pantalla = pygame.display.set_mode(RESOLUCION)
-    pygame.display.set_caption("Juego")
+    pygame.display.set_caption("Survival")
     icono = pygame.transform.scale(pygame.image.load("imagenes/jugador/down1.png"), (80, 80))
     pygame.display.set_icon(icono)
-    fondo = pygame.transform.scale(pygame.image.load("imagenes/fondo.png"), (ANCHO, ALTO)).convert() # SACAR
+    fondo = pygame.transform.scale(pygame.image.load("imagenes/fondo.png"), (ANCHO, ALTO)).convert()  # SACAR
     fuente = pygame.font.SysFont('Bauhaus 93', 30, False)
 
     imagen = pygame_menu.baseimage.BaseImage(
@@ -225,7 +227,7 @@ if __name__ == '__main__':
                  title_font_size=75,
                  title_shadow=True,
                  title_shadow_color=(75, 75, 75),
-                 title_offset=(ANCHO/2-86, 10),
+                 title_offset=(ANCHO / 2 - 140, 10),
                  widget_background_color=(0, 0, 0, 0),
                  widget_font=pygame_menu.font.FONT_MUNRO,
                  widget_font_antialias=True,
@@ -236,13 +238,64 @@ if __name__ == '__main__':
                  widget_shadow_color=(75, 75, 75),
                  widget_shadow_offset=2)
 
+    tema_ayuda = Theme(background_color=imagen,
+                       cursor_color=(0, 0, 0),
+                       menubar_close_button=False,
+                       selection_color=(0, 0, 0),
+                       title_background_color=(255, 255, 255),
+                       title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_NONE,
+                       title_font=pygame_menu.font.FONT_MUNRO,
+                       title_font_antialias=True,
+                       title_font_color=(0, 0, 0),
+                       title_font_size=75,
+                       title_shadow=True,
+                       title_shadow_color=(75, 75, 75),
+                       title_offset=(ANCHO / 2 - 100, 10),
+                       widget_background_color=(0, 0, 0, 0),
+                       widget_font=pygame_menu.font.FONT_MUNRO,
+                       widget_font_antialias=True,
+                       widget_font_color=(75, 75, 75),
+                       widget_font_size=40,
+                       widget_selection_effect=pygame_menu.widgets.selection.LeftArrowSelection(blink_ms=300),
+                       widget_shadow=True,
+                       widget_shadow_color=(75, 75, 75),
+                       widget_shadow_offset=2)
+
     menu = pygame_menu.Menu(600, 800, 'Survival', theme=tema)
-    help_menu = pygame_menu.Menu(600, 800, 'Ayuda', theme=tema)
-    AYUDA = "Presione W para correr hacia arriba" \
-            "Presione D para correr hacia la derecha" \
-            "Presione S para correr hacia abajo" \
-            "Presione A para correr hacia la izquierda"
-    help_menu.add_label(AYUDA, max_char=-1, font_size=40, aling=pygame_menu.locals.ALIGN_RIGHT, font_color=(0, 0, 0))
+    help_menu = pygame_menu.Menu(600, 800, 'Ayuda', theme=tema_ayuda)
+    AYUDAS = {
+        "mov": "Movimientos",
+        "w": "Presione W para correr hacia arriba",
+        "d": "Presione D para correr hacia la derecha",
+        "a": "Presione A para correr hacia la izquierda",
+        "s": "Presione S para correr hacia abajo",
+        "dis": "Disparos",
+        "space": "Presione SPACE para disparo simple",
+        "f": "Presione F para disparo infinito",
+        "r": "Presione R para disparo explosivo",
+        "v": "Presione V para disparo congelador",
+    }
+    help_menu.add_label(AYUDAS["mov"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["w"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["d"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["a"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["s"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["dis"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["space"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["f"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["r"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["v"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+
     help_menu.add_button('Volver', pygame_menu.events.BACK)
     # menu.add_selector('Dificultad: ', [('Dificil', 1), ('Medio', 2), ('Facil', 3)])
     menu.add_text_input('Nombre: ')
