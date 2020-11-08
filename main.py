@@ -236,7 +236,7 @@ if __name__ == '__main__':
                  widget_shadow_color=(75, 75, 75),
                  widget_shadow_offset=2)
 
-    menu = pygame_menu.Menu(600, 800, 'El chanchito de mierda', theme=tema)
+    menu = pygame_menu.Menu(600, 800, 'Survival', theme=tema)
     help_menu = pygame_menu.Menu(600, 800, 'Ayuda', theme=tema)
     AYUDA = "Presione W para correr hacia arriba" \
             "Presione D para correr hacia la derecha" \
