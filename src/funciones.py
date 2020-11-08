@@ -5,7 +5,6 @@ from src.configuracion import *
 def posicion_aleatoria_mapa():
     return randint(0+100, ANCHO-100), randint(0+100, ALTO-100)
 
-
 def posicion_aleatoria_radio(punto_x, punto_y, radio):
     if punto_x + radio >= ANCHO:
         pos_x = randint(punto_x - radio, ANCHO - 30)

@@ -192,11 +192,11 @@ class Nivel:
         fondo = self.traer_fondo_nivel(proximo_numero)
         cantidad_enemigos_iniciales = randint(1, 5)
         cantidad_puntos_aparicion = self.spawn_point_quantity + 1
-        tiempo_respawn = self.respawn - 1000
+        tiempo_respawn = self.respawn - 50
         cantidad_enemigos_spawn = self.cantidad_enemigos_spawn + 1
-        vida_enemigos = self.vida_enemigos + 10
-        danio_enemigos = self.danio_enemigos + 1
-        velocidad_enemigos = self.velocidad_enemigos + 0.5
+        vida_enemigos = self.vida_enemigos + 3
+        danio_enemigos = self.danio_enemigos + 0.5
+        velocidad_enemigos = self.velocidad_enemigos + 0.3
 
         return Nivel(
             jugador=self.jugador,

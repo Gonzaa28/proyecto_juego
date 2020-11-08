@@ -23,7 +23,7 @@ class ItemShop:
         self.tipo_item = tipo_item
         self.mejora = mejora
 
-        self.imagen_comprar = pygame.transform.scale(pygame.image.load('imagenes/grave.png'), (60, alto))
+        self.imagen_comprar = pygame.transform.scale(pygame.image.load('imagenes/bagofmoney.png'), (60, alto))
         self.posicion_imagen_comprar = self.imagen_comprar.get_rect()
 
         self.alinear_imagenes()
@@ -40,7 +40,7 @@ class ItemShop:
     def dibujar(self, pantalla):
         pygame.draw.rect(pantalla, (0, 0, 0), (self.rectangulo.left - 5, self.rectangulo.top - 5,
                                                self.rectangulo.width + 10, self.rectangulo.height + 10))
-        pygame.draw.rect(pantalla, (255, 255, 255), self.rectangulo)
+        pygame.draw.rect(pantalla, (94, 184, 104), self.rectangulo)
         pantalla.blit(self.imagen_item, self.posicion)
         pantalla.blit(self.texto, self.texto_posicion)
         pantalla.blit(self.precio, self.precio_posicion)
@@ -70,6 +70,8 @@ class ItemShop:
                 jugador.vida_inicial += self.mejora
                 jugador.vida = jugador.vida_inicial
 
+def ayuda():
+    pass
 
 def pausa(banderas, jugador, nivel, fuente):
     banderas['w_bandera'] = False
@@ -81,12 +83,13 @@ def pausa(banderas, jugador, nivel, fuente):
     banderas['r_bandera'] = False
     banderas['v_bandera'] = False
 
+    fuente = pygame.font.SysFont('Bauhaus 93', 35)
     pausado = True
 
-    lista_items = [ItemShop('imagenes/grave.png', 60, int(ANCHO/2), 100, 'Poder ataque', 10, ITEM_PODER_ATAQUE, 5)]
-    lista_items.append(ItemShop('imagenes/grave.png', 60, int(ANCHO/2), lista_items[-1].rectangulo.bottom, 'Velocidad',
+    lista_items = [ItemShop('imagenes/sword.png', 60, int(ANCHO/2), 100, 'Poder ataque', 10, ITEM_PODER_ATAQUE, 5)]
+    lista_items.append(ItemShop('imagenes/wing.png', 60, int(ANCHO/2), lista_items[-1].rectangulo.bottom + 15, 'Velocidad      ',
                                 10, ITEM_VELOCIDAD, 5))
-    lista_items.append(ItemShop('imagenes/grave.png', 60, int(ANCHO / 2), lista_items[-1].rectangulo.bottom, 'Vida',
+    lista_items.append(ItemShop('imagenes/items/heart.png', 60, int(ANCHO / 2), lista_items[-1].rectangulo.bottom + 15, 'Vida               ',
                                 10, ITEM_VIDA, 5))
 
     while pausado:
@@ -117,7 +120,6 @@ def pausa(banderas, jugador, nivel, fuente):
         s.last_spawn_time = pygame.time.get_ticks()
 
     nivel.ultimo_enemigo = pygame.time.get_ticks()
-
 
 def main_supervivencia(pantalla, fuente):
     banderas = {
@@ -235,9 +237,16 @@ if __name__ == '__main__':
                  widget_shadow_offset=2)
 
     menu = pygame_menu.Menu(600, 800, 'Juego', theme=tema)
-
+    help_menu = pygame_menu.Menu(600, 800, 'Ayuda', theme=tema)
+    AYUDA = "Presione W para correr hacia arriba" \
+            "Presione D para correr hacia la derecha" \
+            "Presione S para correr hacia abajo" \
+            "Presione A para correr hacia la izquierda"
+    help_menu.add_label(AYUDA, max_char=-1, font_size=40, aling=pygame_menu.locals.ALIGN_RIGHT, font_color=(0, 0, 0))
+    help_menu.add_button('Volver', pygame_menu.events.BACK)
     menu.add_text_input('Nombre: ')
     menu.add_selector('Dificultad: ', [('Dificil', 1), ('Medio', 2), ('Facil', 3)])
     menu.add_button('Modo supervivencia', main_supervivencia, pantalla, fuente)
+    menu.add_button('Ayuda', help_menu)
     menu.add_button('Salir', pygame_menu.events.EXIT)
     menu.mainloop(pantalla)
