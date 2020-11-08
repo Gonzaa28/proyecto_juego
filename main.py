@@ -244,9 +244,9 @@ if __name__ == '__main__':
             "Presione A para correr hacia la izquierda"
     help_menu.add_label(AYUDA, max_char=-1, font_size=40, aling=pygame_menu.locals.ALIGN_RIGHT, font_color=(0, 0, 0))
     help_menu.add_button('Volver', pygame_menu.events.BACK)
-    menu.add_text_input('Nombre: ')
     # menu.add_selector('Dificultad: ', [('Dificil', 1), ('Medio', 2), ('Facil', 3)])
-    menu.add_button('Modo supervivencia', main_supervivencia, pantalla, fuente)
+    menu.add_button('Jugar', main_supervivencia, pantalla, fuente)
+    menu.add_text_input('Nombre: ')
     menu.add_button('Ayuda', help_menu)
     menu.add_button('Salir', pygame_menu.events.EXIT)
     menu.mainloop(pantalla)
