@@ -192,6 +192,11 @@ def main_supervivencia(pantalla, fuente):
         elif nivel.nivel_perdido():
             corriendo = False
 
+        if not corriendo:
+            archivo = open("scores.txt", "a")
+            archivo.write(f'{nivel.numero}\n')
+            archivo.close()
+
         pygame.display.update()
 
         reloj.tick(15)
@@ -261,8 +266,32 @@ if __name__ == '__main__':
                        widget_shadow_color=(75, 75, 75),
                        widget_shadow_offset=2)
 
+    tema_puntaje = Theme(background_color=imagen,
+                       cursor_color=(0, 0, 0),
+                       menubar_close_button=False,
+                       selection_color=(0, 0, 0),
+                       title_background_color=(255, 255, 255),
+                       title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_NONE,
+                       title_font=pygame_menu.font.FONT_MUNRO,
+                       title_font_antialias=True,
+                       title_font_color=(0, 0, 0),
+                       title_font_size=75,
+                       title_shadow=True,
+                       title_shadow_color=(75, 75, 75),
+                       title_offset=(ANCHO / 2 - 120, 10),
+                       widget_background_color=(0, 0, 0, 0),
+                       widget_font=pygame_menu.font.FONT_MUNRO,
+                       widget_font_antialias=True,
+                       widget_font_color=(75, 75, 75),
+                       widget_font_size=40,
+                       widget_selection_effect=pygame_menu.widgets.selection.LeftArrowSelection(blink_ms=300),
+                       widget_shadow=True,
+                       widget_shadow_color=(75, 75, 75),
+                       widget_shadow_offset=2)
+
     menu = pygame_menu.Menu(600, 800, 'Survival', theme=tema)
     help_menu = pygame_menu.Menu(600, 800, 'Ayuda', theme=tema_ayuda)
+    score_menu = pygame_menu.Menu(600, 800, 'Puntajes', theme=tema_puntaje)
     AYUDAS = {
         "mov": "Movimientos",
         "w": "Presione W para correr hacia arriba",
@@ -274,32 +303,47 @@ if __name__ == '__main__':
         "f": "Presione F para disparo infinito",
         "r": "Presione R para disparo explosivo",
         "v": "Presione V para disparo congelador",
+        "p": "Presione P para pausar o acceder a la tienda",
+        "esc": "Presione ESC para salir del juego",
     }
-    help_menu.add_label(AYUDAS["mov"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+    # help_menu.add_label(AYUDAS["mov"], max_char=-1, font_size=31, aling=pygame_menu.locals.ALIGN_RIGHT,
+    #                     font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["w"], max_char=-1, font_size=32, aling=pygame_menu.locals.ALIGN_RIGHT,
                         font_color=(0, 0, 0))
-    help_menu.add_label(AYUDAS["w"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+    help_menu.add_label(AYUDAS["d"], max_char=-1, font_size=32, aling=pygame_menu.locals.ALIGN_RIGHT,
                         font_color=(0, 0, 0))
-    help_menu.add_label(AYUDAS["d"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+    help_menu.add_label(AYUDAS["a"], max_char=-1, font_size=32, aling=pygame_menu.locals.ALIGN_RIGHT,
                         font_color=(0, 0, 0))
-    help_menu.add_label(AYUDAS["a"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+    help_menu.add_label(AYUDAS["s"], max_char=-1, font_size=32, aling=pygame_menu.locals.ALIGN_RIGHT,
                         font_color=(0, 0, 0))
-    help_menu.add_label(AYUDAS["s"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+    # help_menu.add_label(AYUDAS["dis"], max_char=-1, font_size=31, aling=pygame_menu.locals.ALIGN_RIGHT,
+    #                     font_color=(0, 0, 0))
+    help_menu.add_label(AYUDAS["space"], max_char=-1, font_size=32, aling=pygame_menu.locals.ALIGN_RIGHT,
                         font_color=(0, 0, 0))
-    help_menu.add_label(AYUDAS["dis"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+    help_menu.add_label(AYUDAS["f"], max_char=-1, font_size=32, aling=pygame_menu.locals.ALIGN_RIGHT,
                         font_color=(0, 0, 0))
-    help_menu.add_label(AYUDAS["space"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+    help_menu.add_label(AYUDAS["r"], max_char=-1, font_size=32, aling=pygame_menu.locals.ALIGN_RIGHT,
                         font_color=(0, 0, 0))
-    help_menu.add_label(AYUDAS["f"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+    help_menu.add_label(AYUDAS["v"], max_char=-1, font_size=32, aling=pygame_menu.locals.ALIGN_RIGHT,
                         font_color=(0, 0, 0))
-    help_menu.add_label(AYUDAS["r"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+    help_menu.add_label(AYUDAS["p"], max_char=-1, font_size=32, aling=pygame_menu.locals.ALIGN_RIGHT,
                         font_color=(0, 0, 0))
-    help_menu.add_label(AYUDAS["v"], max_char=-1, font_size=33, aling=pygame_menu.locals.ALIGN_RIGHT,
+    help_menu.add_label(AYUDAS["esc"], max_char=-1, font_size=32, aling=pygame_menu.locals.ALIGN_RIGHT,
                         font_color=(0, 0, 0))
 
+    archivo = open("scores.txt", "r")
+    for linea in archivo:
+        linea_format = linea.replace('\n', '')
+        score_menu.add_label(f'Nivel: {linea_format}', max_char=-1, font_size=40, aling=pygame_menu.locals.ALIGN_RIGHT,
+                        font_color=(0, 0, 0))
+    archivo.close()
+
     help_menu.add_button('Volver', pygame_menu.events.BACK)
+    score_menu.add_button('Volver', pygame_menu.events.BACK)
     # menu.add_selector('Dificultad: ', [('Dificil', 1), ('Medio', 2), ('Facil', 3)])
     menu.add_text_input('Nombre: ')
     menu.add_button('Jugar', main_supervivencia, pantalla, fuente)
     menu.add_button('Ayuda', help_menu)
+    menu.add_button('Puntajes', score_menu)
     menu.add_button('Salir', pygame_menu.events.EXIT)
     menu.mainloop(pantalla)
